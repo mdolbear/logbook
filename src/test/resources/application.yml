@@ -1,0 +1,75 @@
+logging:
+  level:
+    org.springframework: ERROR
+    com.com.mjdsoftware: DEBUG
+
+app:
+  applicationName: LogBook
+  applicationDescription: ${app.applicationName} is a Spring Boot application
+  authorizationServerHostName: localhost:8083
+
+---
+springdoc:
+  api-docs:
+    enabled: true
+    path: /rest-api-docs
+  swagger-ui:
+    path: /swagger-ui
+    docExpansion: none
+
+management:
+  server:
+    port: 8081
+  endpoint:
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
+      export:
+        prometheus:
+          enable: true
+    health:
+      show-details: always
+
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  info:
+    env:
+      enabled: true
+
+
+---
+
+spring:
+  activate:
+    on-profile: test
+  datasource:
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:postgresql:12.11://localhost/logbook-db
+    hikari:
+      maximum-pool-size: 2
+  flyway:
+    locations: filesystem:target/test-classes/db/migration
+    baselineVersion: 0
+  jpa:
+    properties:
+      hibernate:
+        naming:
+          implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8083/auth/realms/ecom
+          jwk-set-uri: http://localhost:8083/auth/realms/ecom/protocol/openid-connect/certs

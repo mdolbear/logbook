@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logbook
+spec:
+  selector:
+    matchLabels:
+      app: logbook
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: logbook
+        tier: backend
+        team: mjdsoftware
+    spec:
+      volumes:
+      - name: application-properties-map
+        configMap:
+          name: logbook-config-map
+          items:
+            - key: application.yml
+              path: application.yml
+      containers:
+      - name: logbook
+        image: mjdsoftware/logbook:0.0.1-SNAPSHOT
+        resources:
+          requests:
+            memory: "1G"
+            cpu: "250m"
+          limits:
+            memory: "2G"
+            cpu: "3000m"
+        command:
+          - "java"
+          - "-Xms1g"
+          - "-Xmx2g"
+          - "-agentlib:jdwp=transport=dt_socket,server=y,address=*:4000,suspend=n"
+          - "-Dspring.profiles.active=devel"
+          - "-jar"
+          - "/logbook-0.0.1-SNAPSHOT.jar"
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: application-properties-map
+          mountPath: /config
+          readOnly: true
+        # the readiness probe details
+        readinessProbe:
+          httpGet: # make an HTTP request
+            port: 8081 # port to use
+            path: /actuator/health # endpoint to hit
+            scheme: HTTP
+          initialDelaySeconds: 30 # how long to wait before checking
+          periodSeconds: 30 # how long to wait between checks
+          successThreshold: 1 # how many successes to hit before accepting
+          failureThreshold: 3 # how many failures to accept before failing
+          timeoutSeconds: 5 # how long to wait for a response
+        # the liveness probe details
+        livenessProbe:
+          httpGet: # make an HTTP request
+            port: 8081 # port to use
+            path: /actuator/health # endpoint to hit
+            scheme: HTTP
+          initialDelaySeconds: 30 # how long to wait before checking
+          periodSeconds: 60 # how long to wait between checks
+          successThreshold: 1 # how many successes to hit before accepting
+          failureThreshold: 3 # how many failures to accept before failing
+          timeoutSeconds: 5 # how long to wait for a response
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 50%

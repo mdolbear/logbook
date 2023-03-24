@@ -1,0 +1,109 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logbook-config-map
+data:
+  application.yml: |-
+    logging:
+      level:
+        org.springframework: ERROR
+        com.mjdsoftware: DEBUG
+    
+    app:
+      applicationName: Logbook
+      applicationDescription: ${app.applicationName} is a Spring Boot application
+    
+    ---
+    springdoc:
+      api-docs:
+        enabled: true
+        path: /rest-api-docs
+      swagger-ui:
+        path: /swagger-ui
+        docExpansion: none
+    
+    management:
+      server:
+        port: 8081
+      endpoint:
+        prometheus:
+          enabled: true
+        metrics:
+          enabled: true
+          export:
+            prometheus:
+              enable: true
+        health:
+          show-details: always
+    
+      endpoints:
+        web:
+          exposure:
+            include: "*"
+    
+      info:
+        env:
+          enabled: true
+    
+    
+    ---
+    
+    spring:
+      activate:
+        on-profile: test
+      datasource:
+        driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+        url: jdbc:tc:postgresql:12.11://localhost/logbook-db
+        hikari:
+          maximum-pool-size: 2
+      flyway:
+        locations: classpath:db/migration
+        baselineVersion: 0
+      jpa:
+        properties:
+          hibernate:
+            naming:
+              implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+              physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+            jdbc:
+              lob:
+                non_contextual_creation: true
+      servlet:
+        multipart:
+          max-file-size: 100MB
+          max-request-size: 100MB
+    
+    ---
+    
+    spring:
+      activate:
+        on-profile: devel
+      datasource:
+        username: logbook_user
+        password: logbook_pw
+        driverClassName: org.postgresql.Driver
+        url: jdbc:postgresql://postgresql.default.svc.cluster.local:5432/logbook
+      flyway:
+        locations: classpath:db/migration
+        table: schema_version
+        validate-on-migrate: false
+        user: logbook_user
+        password: logbook_pw
+      jpa:
+        properties:
+          hibernate:
+            naming:
+              implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+              physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+            jdbc:
+              lob:
+                non_contextual_creation: true
+      servlet:
+        multipart:
+          max-file-size: 800MB
+          max-request-size: 800MB
+
+
+
+
+
