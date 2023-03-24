@@ -29,4 +29,4 @@ helm install postgresql  bitnami/postgresql --version 12.1.9 --values=postgresql
 127.0.0.1       logbook
 ```
 
-5.Once all pods are running, go to url http://logbook/swagger-ui/index.html to get to swagger.
+5. Once all pods are running, go to url http://logbook/swagger-ui/index.html to get to swagger.
