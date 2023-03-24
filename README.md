@@ -8,7 +8,6 @@ After getting that prerequisite installed, do the following:
 1. Build the project:
 
 ```
-cd ..
 mvn clean install -P build-docker-image
 ```
 
