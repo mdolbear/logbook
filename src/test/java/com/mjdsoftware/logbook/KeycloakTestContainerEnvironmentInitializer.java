@@ -41,11 +41,11 @@ public class KeycloakTestContainerEnvironmentInitializer {
                 .applyTo(configurableApplicationContext.getEnvironment());
 
         TestPropertyValues.of("spring.security.oauth2.resourceserver.jwt.jwk-set-uri="
-                + "http://" + this.getKeycloak().getHost() + ":" + this.getKeycloak().getHttpPort() + "/realms/ecom/protocol/openid-connect/certs")
+                + "http://" + this.getKeycloak().getHost() + ":" + this.getKeycloak().getHttpPort() + "/realms/logbook/protocol/openid-connect/certs")
                 .applyTo(configurableApplicationContext.getEnvironment());
 
         TestPropertyValues.of("spring.security.oauth2.resourceserver.jwt.issuer-uri="
-                + "http://" + this.getKeycloak().getHost() + ":" + this.getKeycloak().getHttpPort() + "/realms/ecom")
+                + "http://" + this.getKeycloak().getHost() + ":" + this.getKeycloak().getHttpPort() + "/realms/logbook")
                 .applyTo(configurableApplicationContext.getEnvironment());
 
 
@@ -77,10 +77,10 @@ public class KeycloakTestContainerEnvironmentInitializer {
         System.setProperty("app.authorizationServerAdminPassword", aKeycloakContainer.getAdminPassword());
 
         System.setProperty("spring.security.oauth2.resourceserver.jwt.issuer-uri",
-                "http://" + aKeycloakContainer.getHost() + ":" + aKeycloakContainer.getHttpPort() + "/realms/ecom");
+                "http://" + aKeycloakContainer.getHost() + ":" + aKeycloakContainer.getHttpPort() + "/realms/logbook");
 
         System.setProperty("spring.security.oauth2.resourceserver.jwt.jwk-set-uri",
-                "http://" + aKeycloakContainer.getHost() + ":" + aKeycloakContainer.getHttpPort() + "/realms/ecom/protocol/openid-connect/certs");
+                "http://" + aKeycloakContainer.getHost() + ":" + aKeycloakContainer.getHttpPort() + "/realms/logbook/protocol/openid-connect/certs");
 
     }
 

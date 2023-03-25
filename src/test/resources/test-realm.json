@@ -1,6 +1,6 @@
 {
-  "id": "ecom",
-  "realm": "ecom",
+  "id": "logbook",
+  "realm": "logbook",
   "notBefore": 0,
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
@@ -48,7 +48,7 @@
         "description": "${role_offline-access}",
         "composite": false,
         "clientRole": false,
-        "containerId": "ecom",
+        "containerId": "logbook",
         "attributes": {}
       },
       {
@@ -57,7 +57,7 @@
         "description": "${role_uma_authorization}",
         "composite": false,
         "clientRole": false,
-        "containerId": "ecom",
+        "containerId": "logbook",
         "attributes": {}
       },
       {
@@ -65,7 +65,7 @@
         "name": "user",
         "composite": false,
         "clientRole": false,
-        "containerId": "ecom",
+        "containerId": "logbook",
         "attributes": {}
       }
     ],
@@ -435,7 +435,7 @@
       "clientId": "account",
       "name": "${client_account}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/ecom/account/",
+      "baseUrl": "/realms/logbook/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
@@ -446,7 +446,7 @@
         "view-profile"
       ],
       "redirectUris": [
-        "/realms/ecom/account/*"
+        "/realms/logbook/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -482,14 +482,14 @@
       "clientId": "account-console",
       "name": "${client_account-console}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/ecom/account/",
+      "baseUrl": "/realms/logbook/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
       "redirectUris": [
-        "/realms/ecom/account/*"
+        "/realms/logbook/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -731,14 +731,14 @@
       "clientId": "security-admin-console",
       "name": "${client_security-admin-console}",
       "rootUrl": "${authAdminUrl}",
-      "baseUrl": "/admin/ecom/console/",
+      "baseUrl": "/admin/logbook/console/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
       "redirectUris": [
-        "/admin/ecom/console/*"
+        "/admin/logbook/console/*"
       ],
       "webOrigins": [
         "+"
@@ -2105,12 +2105,12 @@
     {
       "id": "0274d992-4a29-4ef3-be06-b4cb9c100696",
       "createdTimestamp": 1651847348577,
-      "username": "donotdelete",
+      "username": "athelete",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "string2"
+          "value": "athelete"
         }
       ],
       "totp": false,
@@ -2182,12 +2182,12 @@
     {
       "id": "808367d1-4b6c-4cf6-9595-c6745921ae5b",
       "createdTimestamp": 1651847710940,
-      "username": "tmargolis!",
+      "username": "anotherAthelete!",
       "enabled": true,
       "credentials": [
         {
           "type": "password",
-          "value": "Qwerty$12!"
+          "value": "anotherAthelete!"
         }
       ],
       "totp": false,

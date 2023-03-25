@@ -103,8 +103,8 @@ public class KeyCloakUtilitiesTest {
 
 
     //Constants
-    public static final String DONOTDELETE_USER = "donotdelete";
-    public static final String DONOTDELETE_PASSWORD = "string2";
+    public static final String DONOTDELETE_USER = "athelete";
+    public static final String DONOTDELETE_PASSWORD = "athelete";
     public static final String NEW_CLIENT = "newClient";
 
     public static final String NEW_USER_TO_CREATE = "newusertocreate";

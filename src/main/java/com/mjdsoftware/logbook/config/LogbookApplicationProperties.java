@@ -23,7 +23,7 @@ public class LogbookApplicationProperties {
     private String authorizationServerHostName;
 
     @Getter @Setter
-    private String authorizationServerEcomRealmName;
+    private String authorizationServerRealmName;
 
     @Getter @Setter
     private String authorizationServerClientId;

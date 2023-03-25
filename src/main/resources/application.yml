@@ -7,10 +7,10 @@ logging:
 app:
   applicationName: Logbook
   applicationDescription: ${app.applicationName} is a Spring Boot application
-  authorizationServerEcomRealmName: ecom
+  authorizationServerRealmName: logbook
   authorizationServerClientId: newClient
   authorizationServerClientSecret: newClientSecret
-  authorizationServerAdminUser: ecom-admin
+  authorizationServerAdminUser: logbook-admin
   authorizationServerAdminPassword: pass
   authorizationServerAdminClientId: admin-cli
   authorizationServerTokenUri: /realms/

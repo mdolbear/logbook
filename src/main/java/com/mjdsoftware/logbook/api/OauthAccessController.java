@@ -36,7 +36,7 @@ public class OauthAccessController {
     }
 
     /**
-     * Answer a normal oauth token given ecomUsername, ecomPassword, and clientId.
+     * Answer a normal oauth token given username, password, and clientId.
      * If no aClientId is provided, use the default one
      *
      * @param username String

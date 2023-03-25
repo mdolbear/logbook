@@ -46,8 +46,8 @@ public class KeyCloakUtilities {
     private String authorizationServerClientSecret;
 
     @Getter(value=AccessLevel.PRIVATE)
-    @Value("${app.authorizationServerEcomRealmName}")
-    private String authorizationServerEcomRealmName;
+    @Value("${app.authorizationServerRealmName}")
+    private String authorizationServerRealmName;
 
     @Getter(value=AccessLevel.PRIVATE)
     @Value("${app.authorizationServerTokenUri}")
@@ -663,7 +663,7 @@ public class KeyCloakUtilities {
 
         return HTTP + this.getAuthorizationServerHostName()
                         + this.getAuthorizationServerTokenUri()
-                            + this.getAuthorizationServerEcomRealmName() + TOKEN_URI_2;
+                            + this.getAuthorizationServerRealmName() + TOKEN_URI_2;
     }
 
     /**
@@ -685,7 +685,7 @@ public class KeyCloakUtilities {
 
         return HTTP + this.getAuthorizationServerHostName() +
                 this.getAuthorizationServerUserUri() +
-                this.getAuthorizationServerEcomRealmName() + FIND_USER_URI_2 + aUsername;
+                this.getAuthorizationServerRealmName() + FIND_USER_URI_2 + aUsername;
     }
 
     /**
@@ -696,7 +696,7 @@ public class KeyCloakUtilities {
 
         return HTTP + this.getAuthorizationServerHostName() +
                 this.getAuthorizationServerUserUri() +
-                this.getAuthorizationServerEcomRealmName() + CREATE_USER_URI_2;
+                this.getAuthorizationServerRealmName() + CREATE_USER_URI_2;
     }
 
     /**
@@ -708,7 +708,7 @@ public class KeyCloakUtilities {
 
         return HTTP + this.getAuthorizationServerHostName() +
                       this.getAuthorizationServerUserUri() +
-                        this.getAuthorizationServerEcomRealmName() + PUT_USER_URI_2 + anId;
+                        this.getAuthorizationServerRealmName() + PUT_USER_URI_2 + anId;
     }
 
     /**
@@ -720,7 +720,7 @@ public class KeyCloakUtilities {
 
         return HTTP + this.getAuthorizationServerHostName() +
                 this.getAuthorizationServerUserUri() +
-                    this.getAuthorizationServerEcomRealmName() + DELETE_USER_URI_2 + anId;
+                    this.getAuthorizationServerRealmName() + DELETE_USER_URI_2 + anId;
     }
 
     /**

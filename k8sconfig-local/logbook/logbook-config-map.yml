@@ -12,10 +12,10 @@ data:
     app:
       applicationName: Logbook
       applicationDescription: ${app.applicationName} is a Spring Boot application
-      authorizationServerEcomRealmName: ecom
+      authorizationServerRealmName: logbook
       authorizationServerClientId: newClient
       authorizationServerClientSecret: newClientSecret
-      authorizationServerAdminUser: ecom-admin
+      authorizationServerAdminUser: logbook-admin
       authorizationServerAdminPassword: pass
       authorizationServerAdminClientId: admin-cli
       authorizationServerTokenUri: /realms/
@@ -115,8 +115,8 @@ data:
         oauth2:
           resourceserver:
             jwt:
-              issuer-uri: http://keycloak-host/realms/ecom
-              jwk-set-uri: http://keycloak:8080/realms/ecom/protocol/openid-connect/certs
+              issuer-uri: http://keycloak-host/realms/logbook
+              jwk-set-uri: http://keycloak:8080/realms/logbook/protocol/openid-connect/certs
     app:
       authorizationServerHostName: keycloak:8080
 

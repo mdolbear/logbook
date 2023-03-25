@@ -72,7 +72,7 @@
             "create-realm"
           ],
           "client": {
-            "ecom-realm": [
+            "logbook-realm": [
               "view-authorization",
               "view-users",
               "query-groups",
@@ -129,7 +129,7 @@
       }
     ],
     "client": {
-      "ecom-realm": [
+      "logbook-realm": [
         {
           "id": "1c968d5a-e04a-4129-aa74-5e5ee96b694f",
           "name": "view-clients",
@@ -137,7 +137,7 @@
           "composite": true,
           "composites": {
             "client": {
-              "ecom-realm": [
+              "logbook-realm": [
                 "query-clients"
               ]
             }
@@ -171,7 +171,7 @@
           "composite": true,
           "composites": {
             "client": {
-              "ecom-realm": [
+              "logbook-realm": [
                 "query-groups",
                 "query-users"
               ]
@@ -816,8 +816,8 @@
     },
     {
       "id": "05f13521-c8c5-4191-ab23-577eedefc79d",
-      "clientId": "ecom-realm",
-      "name": "ecom Realm",
+      "clientId": "logbook-realm",
+      "name": "logbook Realm",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,

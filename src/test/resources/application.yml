@@ -7,10 +7,10 @@ logging:
 app:
   applicationName: logbook-test
   applicationDescription: ${app.applicationName} is a Spring Boot application
-  authorizationServerEcomRealmName: ecom
+  authorizationServerRealmName: logbook
   authorizationServerClientId: newClient
   authorizationServerClientSecret: newClientSecret
-  authorizationServerAdminUser: ecom-admin
+  authorizationServerAdminUser: logbook-admin
   authorizationServerAdminPassword: pass
   authorizationServerAdminClientId: admin-cli
   authorizationServerTokenUri: /realms/
@@ -80,7 +80,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8083/auth/realms/ecom
-          jwk-set-uri: http://localhost:8083/auth/realms/ecom/protocol/openid-connect/certs
+          issuer-uri: http://localhost:8083/auth/realms/logbook
+          jwk-set-uri: http://localhost:8083/auth/realms/logbook/protocol/openid-connect/certs
 app:
   authorizationServerHostName: localhost:8083

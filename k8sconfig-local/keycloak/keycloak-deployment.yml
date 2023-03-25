@@ -20,7 +20,7 @@ spec:
           args: ["start-dev", "--hostname=keycloak-host"]
           env:
             - name: KEYCLOAK_ADMIN
-              value: "ecom-admin"
+              value: "logbook-admin"
             - name: KEYCLOAK_ADMIN_PASSWORD
               value: "pass"
             - name: KC_PROXY
