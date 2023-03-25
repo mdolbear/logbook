@@ -12,7 +12,7 @@ we use what I am calling the "merge approach", the domain objects can control wh
 The downside is that merging can be somewhat complex. Take a look at the interface, 
 com.mjdsoftware.logbook.domain.entities.DomainObjectCollectionEntry and how it's used in code to merge collection changes.
 
-This project is deployed as an Oauth2 "Resource Server". It utilizes keycloak as an Authentication Server, and the two
+This project is deployed as an Oauth2 "Resource Server". It utilizes keycloak as an Authentication/Authorization Server, and the two
 servers interact at runtime.
 
 
