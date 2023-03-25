@@ -3,10 +3,19 @@ logging:
     org.springframework: ERROR
     com.com.mjdsoftware: DEBUG
 
+
 app:
-  applicationName: LogBook
+  applicationName: logbook-test
   applicationDescription: ${app.applicationName} is a Spring Boot application
-  authorizationServerHostName: localhost:8083
+  authorizationServerEcomRealmName: ecom
+  authorizationServerClientId: newClient
+  authorizationServerClientSecret: newClientSecret
+  authorizationServerAdminUser: ecom-admin
+  authorizationServerAdminPassword: pass
+  authorizationServerAdminClientId: admin-cli
+  authorizationServerTokenUri: /realms/
+  authorizationServerAdminTokenUri: /realms/master/protocol/openid-connect/token
+  authorizationServerUserUri: /admin/realms/
 
 ---
 springdoc:
@@ -73,3 +82,5 @@ spring:
         jwt:
           issuer-uri: http://localhost:8083/auth/realms/ecom
           jwk-set-uri: http://localhost:8083/auth/realms/ecom/protocol/openid-connect/certs
+app:
+  authorizationServerHostName: localhost:8083

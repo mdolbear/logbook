@@ -12,6 +12,15 @@ data:
     app:
       applicationName: Logbook
       applicationDescription: ${app.applicationName} is a Spring Boot application
+      authorizationServerEcomRealmName: ecom
+      authorizationServerClientId: newClient
+      authorizationServerClientSecret: newClientSecret
+      authorizationServerAdminUser: ecom-admin
+      authorizationServerAdminPassword: pass
+      authorizationServerAdminClientId: admin-cli
+      authorizationServerTokenUri: /realms/
+      authorizationServerAdminTokenUri: /realms/master/protocol/openid-connect/token
+      authorizationServerUserUri: /admin/realms/
     
     ---
     springdoc:
@@ -102,7 +111,14 @@ data:
         multipart:
           max-file-size: 800MB
           max-request-size: 800MB
-
+      security:
+        oauth2:
+          resourceserver:
+            jwt:
+              issuer-uri: http://keycloak-host/realms/ecom
+              jwk-set-uri: http://keycloak:8080/realms/ecom/protocol/openid-connect/certs
+    app:
+      authorizationServerHostName: keycloak:8080
 
 
 

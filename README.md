@@ -24,7 +24,8 @@ mvn clean install -P build-docker-image
 cd k8sconfig-local
 helm repo add bitnami https://charts.bitnami.com/bitnami  
 helm repo update
-helm install postgresql  bitnami/postgresql --version 12.1.9 --values=postgresql-values.yaml
+helm install postgresql  bitnami/postgresql --version 12.1.9 --values=logbook-postgresql-values.yaml
+helm install postgresql-keycloak  bitnami/postgresql --version 12.1.9 --values=keycloak-postgresql-values.yaml
 ```
 
 3. Install kubernetes artifacts: In the k8sconfig-local directory

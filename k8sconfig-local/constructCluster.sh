@@ -1,3 +1,7 @@
+#Keyclaok
+kubectl create -f keycloak/keycloak-deployment.yml
+kubectl create -f keycloak/keycloak-service.yml
+
 
 #logbook
 kubectl apply -f sa/logbook-service-account.yml

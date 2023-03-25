@@ -3,9 +3,19 @@ logging:
     org.springframework: ERROR
     com.mjdsoftware: DEBUG
 
+
 app:
   applicationName: Logbook
   applicationDescription: ${app.applicationName} is a Spring Boot application
+  authorizationServerEcomRealmName: ecom
+  authorizationServerClientId: newClient
+  authorizationServerClientSecret: newClientSecret
+  authorizationServerAdminUser: ecom-admin
+  authorizationServerAdminPassword: pass
+  authorizationServerAdminClientId: admin-cli
+  authorizationServerTokenUri: /realms/
+  authorizationServerAdminTokenUri: /realms/master/protocol/openid-connect/token
+  authorizationServerUserUri: /admin/realms/
 
 ---
 springdoc:
@@ -96,6 +106,7 @@ spring:
     multipart:
       max-file-size: 800MB
       max-request-size: 800MB
-
+app:
+  authorizationServerHostName: localhost:8083
 
 

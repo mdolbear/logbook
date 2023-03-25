@@ -1,4 +1,4 @@
-package com.mjdsoftware.logbook;
+package com.mjdsoftware.logbook.config;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;

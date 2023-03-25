@@ -7,6 +7,16 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
+    - host: keycloak-host
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080
     - host: logbook
       http:
         paths:

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:18.0.0
+          args: ["start-dev", "--hostname=keycloak-host"]
+          env:
+            - name: KEYCLOAK_ADMIN
+              value: "ecom-admin"
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: "pass"
+            - name: KC_PROXY
+              value: "edge"
+            - name: PROXY_ADDRESS_FORWARDING
+              value: "true"
+            - name: HTTP_PROTOCOL
+              value: "http"
+#            - name: KEYCLOAK_FRONTEND_URL
+#              value: "http://keycloak-host/"
+            - name: KC_DB
+              value: "postgres"
+            - name: KC_DB_PASSWORD
+              value: "keycloak_pw"
+            - name: KC_DB_USERNAME
+              value: "keycloak_user"
+            - name: KC_DB_URL
+              value: "jdbc:postgresql://postgresql-keycloak.default.svc.cluster.local:5432/keycloak-db"
+            - name: JGROUPS_DISCOVERY_PROTOCOL
+              value: dns.DNS_PING
+            - name: JGROUPS_DISCOVERY_PROPERTIES
+              value: dns_query=keycloak
+            - name: CACHE_OWNERS_COUNT
+              value: "2"
+            - name: CACHE_OWNERS_AUTH_SESSIONS_COUNT
+              value: "2"
+          ports:
+            - name: jgroups
+              containerPort: 7600
+            - name: http
+              containerPort: 8080
+            - name: https
+              containerPort: 8443
+          readinessProbe:
+            httpGet:
+              path: /realms/master
+              port: 8080
