@@ -342,9 +342,9 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @PutMapping("logbook/{logbookId}/entry/{logbookEntryId}/activity")
-    public ResponseEntity<ActivityDTO> modifyLActivity(@PathVariable Long logbookId,
-                                                       @PathVariable Long logbookEntryId,
-                                                       @Valid @RequestBody ActivityDTO anActivityDTO) {
+    public ResponseEntity<ActivityDTO> modifyActivity(@PathVariable Long logbookId,
+                                                      @PathVariable Long logbookEntryId,
+                                                      @Valid @RequestBody ActivityDTO anActivityDTO) {
 
         Activity        tempResult = null;
         Logbook         tempLogbook = null;
@@ -447,6 +447,53 @@ public class LogbookController {
         }
 
         return tempResult;
+
+    }
+
+    /**
+     * Find all logbook entries for a logbook identified by id.
+     * @param logbookId Long
+     * @return ResponseEntity
+     */
+    @GetMapping("logbook/{logbookId}/entries")
+    public ResponseEntity<List<LogbookEntryDTO>> findLogbookEntries(@PathVariable Long logbookId) {
+
+        List<LogbookEntryDTO> tempEntries = new ArrayList<>();
+        Logbook            tempLogbook;
+
+        tempLogbook = this.getLogbookService().findLogbookById(logbookId);
+        if (tempLogbook != null) {
+
+            tempEntries =
+                    this.getLogbookEntryService().findAllLogbookEntriesForLogbook(tempLogbook);
+        }
+
+        return new ResponseEntity<>(tempEntries,
+                                    HttpStatus.OK);
+
+    }
+
+
+    /**
+     * Find count of logbook entries for a logbook identified by id.
+     * @param logbookId Long
+     * @return ResponseEntity
+     */
+    @GetMapping("logbook/{logbookId}/entriesCount")
+    public ResponseEntity<Long> findLogbookEntriesCount(@PathVariable Long logbookId) {
+
+        Long               tempCount = Long.valueOf(0l);
+        Logbook            tempLogbook;
+
+        tempLogbook = this.getLogbookService().findLogbookById(logbookId);
+        if (tempLogbook != null) {
+
+            tempCount =
+                    this.getLogbookEntryService().findLogbookEntryCount(tempLogbook);
+        }
+
+        return new ResponseEntity<>(tempCount,
+                                    HttpStatus.OK);
 
     }
 

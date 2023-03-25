@@ -42,6 +42,32 @@ public class ActivityDTO {
         this.setComments(new ArrayList<CommentDTO>());
     }
 
+    /**
+     * Answer a constructor without last field
+     * @param anId long
+     * @param aType ActivityType
+     * @param aDuration double
+     * @param aUnits DurationUnits
+     * @param aVersion long
+     * @param anActivityDetails String
+     */
+    public ActivityDTO(Long anId,
+                       ActivityType aType,
+                       double aDuration,
+                       DurationUnits aUnits,
+                       long aVersion,
+                       String anActivityDetails) {
+
+        this();
+        this.setId(anId);
+        this.setActivityType(aType);
+        this.setDuration(aDuration);
+        this.setDurationUnits(aUnits);
+        this.setVersion(aVersion);
+        this.setActivityDetails(anActivityDetails);
+
+    }
+
 
     /**
      * Add a comment to me

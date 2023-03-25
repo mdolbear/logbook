@@ -37,6 +37,21 @@ public class LogbookEntryDTO {
     }
 
     /**
+     * Answer an instance of me for specific parameters
+     * @param anId Long
+     * @param anActivityDate Calendar
+     * @param aVersion long
+     */
+    public LogbookEntryDTO(Long anId, Calendar anActivityDate, long aVersion) {
+
+        this();
+        this.setId(anId);
+        this.setActivityDate(anActivityDate);
+        this.setVersion(aVersion);
+
+    }
+
+    /**
      * Add a comment to me
      * @param aComment Comment
      */

@@ -192,5 +192,29 @@ public class LogbookEntryServiceImpl extends AbstractServiceImpl implements Logb
 
 
 
+    /**
+     * Answer logbook entries associated with aLogbook (in dto form))
+     * @param aLogbook Logbook
+     * @return List
+     */
+    @Override
+    @Transactional
+    public List<LogbookEntryDTO> findAllLogbookEntriesForLogbook(@NonNull Logbook aLogbook) {
+
+        return this.getLogbookEntryRepository().findAllByLogbook(aLogbook);
+    }
+
+    /**
+     * Find logbook entry count for aLogbook
+     * @param aLogbook Logbook
+     * @return Long
+     */
+    @Override
+    @Transactional
+    public Long findLogbookEntryCount(@NonNull Logbook aLogbook) {
+
+        return this.getLogbookEntryRepository().getCountByLogbookId(aLogbook.getId());
+    }
+
 
 }

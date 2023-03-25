@@ -69,9 +69,9 @@ token. Then you should be able to interact with the Logbook Controller via swagg
 
 7. Project next steps:
 
-    -I want to add "dto projections" so I don't have to translate from domain objects to dtos.
-
     -Role-based security
+
+    -Api doc via open api
 
     -Multi-tenancy -> Add user object
     

@@ -56,4 +56,19 @@ public interface LogbookEntryService {
      */
     public LogbookEntry findLogbookEntryById(Long anId);
 
+    /**
+     * Answer logbook entries associated with aLogbook (in dto form))
+     * @param aLogbook Logbook
+     * @return List
+     */
+    public List<LogbookEntryDTO> findAllLogbookEntriesForLogbook(Logbook aLogbook);
+
+    /**
+     * Find logbook entry count for aLogbook
+     * @param aLogbook Logbook
+     * @return Long
+     */
+    public Long findLogbookEntryCount(Logbook aLogbook);
+
+
 }
