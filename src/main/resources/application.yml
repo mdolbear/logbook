@@ -106,6 +106,12 @@ spring:
     multipart:
       max-file-size: 800MB
       max-request-size: 800MB
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8083/auth/realms/ecom
+          jwk-set-uri: http://localhost:8083/auth/realms/ecom/protocol/openid-connect/certs
 app:
   authorizationServerHostName: localhost:8083
 
