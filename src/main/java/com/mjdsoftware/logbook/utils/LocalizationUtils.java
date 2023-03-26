@@ -3,6 +3,7 @@ package com.mjdsoftware.logbook.utils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -20,9 +21,19 @@ import java.util.Locale;
 @NoArgsConstructor
 public class LocalizationUtils {
 
-    @Getter(value = AccessLevel.PRIVATE)
-    @Autowired
+    @Getter(value = AccessLevel.PRIVATE) @Setter(value=AccessLevel.PRIVATE)
     private MessageSource messageSource;
+
+    /**
+     * Answer an instance of me for the following arguments
+     * @param aSource MessageSource
+     */
+    @Autowired
+    public LocalizationUtils(MessageSource aSource) {
+
+        this.setMessageSource(aSource);
+
+    }
 
 
     /**

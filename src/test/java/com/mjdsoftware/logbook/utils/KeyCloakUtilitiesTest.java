@@ -16,7 +16,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.ResourceAccessException;
@@ -123,8 +122,7 @@ public class KeyCloakUtilitiesTest {
         OauthToken tempResult;
 
         tempResult = this.getKeycloakUtilities()
-                         .retrieveToken(null,
-                                        DONOTDELETE_USER,
+                         .retrieveToken(DONOTDELETE_USER,
                                         DONOTDELETE_PASSWORD,
                                         NEW_CLIENT);
 
@@ -197,8 +195,7 @@ public class KeyCloakUtilitiesTest {
         OauthToken tempResult;
 
         tempResult = this.getKeycloakUtilities()
-                         .retrieveToken(null,
-                                        DONOTDELETE_USER,
+                         .retrieveToken(DONOTDELETE_USER,
                                         DONOTDELETE_PASSWORD,
                                         NEW_CLIENT);
 

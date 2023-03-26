@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class OauthAccessServiceImpl implements OauthAccessService {
 
-    @Autowired
+
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PROTECTED) // exposed for unit tests
     private KeyCloakUtilities keycloakUtilities;
 
@@ -32,9 +32,25 @@ public class OauthAccessServiceImpl implements OauthAccessService {
     @Value("${app.authorizationServerAdminClientId}")
     private String authorizationServerAdminClientId;
 
-    @Autowired
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PROTECTED) // exposed for unit tests
     private MessageSource messageSource;
+
+
+    /**
+     * Answer an instance of me for the following arguments:
+     *
+     * @param aUtils KeyCloakUtilities
+     * @param aSource MessageSource
+     */
+    @Autowired
+    public OauthAccessServiceImpl(KeyCloakUtilities aUtils,
+                                  MessageSource aSource) {
+
+        this.setKeycloakUtilities(aUtils);
+        this.setMessageSource(aSource);
+
+    }
+
 
     /**
      * Retrieve token
@@ -64,7 +80,7 @@ public class OauthAccessServiceImpl implements OauthAccessService {
     /**
      * Retrieve User
      *
-     * @param username String
+     * @param aUsername String
      * @return OauthToken
      */
     @Override

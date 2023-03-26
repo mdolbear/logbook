@@ -33,7 +33,6 @@ public class KeyCloakUtilities {
 
     @Getter(value = AccessLevel.PRIVATE)
     @Setter(value = AccessLevel.PROTECTED)
-    @Autowired
     private RestUtils restUtils;
 
     @Getter(value = AccessLevel.PRIVATE)
@@ -76,7 +75,6 @@ public class KeyCloakUtilities {
     private String authorizationServerAdminClientId;
 
 
-    @Autowired
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PROTECTED) // exposed for unit tests
     private MessageSource messageSource;
 
@@ -112,6 +110,18 @@ public class KeyCloakUtilities {
      */
     private static Logger getLogger() {
         return log;
+    }
+
+    /**
+     * Answer an instance of me for the following arguments:
+     * @param aUtils RestUtils
+     * @param aSource MessageSource
+     */
+    @Autowired
+    public KeyCloakUtilities(RestUtils aUtils, MessageSource aSource) {
+
+        this.setRestUtils(aUtils);
+        this.setMessageSource(aSource);
     }
 
 
@@ -378,47 +388,6 @@ public class KeyCloakUtilities {
 
     /**
      * Retrieve token
-     * @param anOrganizationId String null for special user, non-null for org-owned user
-     * @param aUsername String
-     * @param aPassword String
-     * @param aClientId String
-     * @return OauthToken
-     */
-    public OauthToken retrieveToken(String anOrganizationId,
-                                    @NonNull String aUsername,
-                                    @NonNull String aPassword,
-                                    String aClientId) {
-
-        aClientId = this.parseClientIdAndAnswerDefaultIfNotDefined(aClientId);
-
-        String tempUrl = this.formulateRegularTokenUrl();
-        try {
-            HttpEntity<MultiValueMap<String, Object>> formData =
-                    createFormDataForTokenInvocation(aUsername,
-                                                     aPassword,
-                                                     PASSWORD_GRANT_TYPE,
-                                                    "write",
-                                                     aClientId,
-                                                     this.getAuthorizationServerClientSecret());
-            ResponseEntity<OauthToken> tempResult =
-                    getRestUtils().postForEntity(new RestTemplate(),
-                                                tempUrl,
-                                                formData,
-                                                OauthToken.class);
-
-            return this.diagnoseAndReturnResult(tempResult);
-        }
-        catch(Exception exc) {
-
-            String msg = "User {username=" + aUsername + "} is not retrievable from KeyCloak: " +
-                    exc.getMessage();
-            throw new IllegalStateException(msg + "{ username: " + aUsername + "}");
-        }
-    }
-
-
-    /**
-     * Retrieve token
      * @param aUsername String
      * @param aPassword String
      * @param aClientId String
@@ -545,12 +514,12 @@ public class KeyCloakUtilities {
 
     /**
      * Create form data for regular token
-     * @param aUsername
-     * @param aPassword
-     * @param aGrantType
-     * @param aScope
-     * @param aClientId
-     * @param aClientSecret
+     * @param aUsername String
+     * @param aPassword String
+     * @param aGrantType String
+     * @param aScope String
+     * @param aClientId String
+     * @param aClientSecret String
      * @return HttpEntity
      */
     private HttpEntity<MultiValueMap<String, Object>> createFormDataForTokenInvocation(String aUsername,
@@ -578,11 +547,11 @@ public class KeyCloakUtilities {
 
     /**
      * Create form data for refresh of a token
-     * @param aRefreshTokenValue
-     * @param aGrantType
-     * @param aScope
-     * @param aClientId
-     * @param aClientSecret
+     * @param aRefreshTokenValue String
+     * @param aGrantType String
+     * @param aScope String
+     * @param aClientId String
+     * @param aClientSecret String
      * @return HttpEntity
      */
     private HttpEntity<MultiValueMap<String, Object>> createFormDataForRefreshTokenInvocation(String aRefreshTokenValue,
@@ -610,10 +579,10 @@ public class KeyCloakUtilities {
 
     /**
      * Create form data for admin token
-     * @param aUsername
-     * @param aPassword
-     * @param aGrantType
-     * @param aClientId
+     * @param aUsername String
+     * @param aPassword String
+     * @param aGrantType String
+     * @param aClientId String
      * @return HttpEntity
      */
     private HttpEntity<MultiValueMap<String, Object>> createFormDataForAdminTokenInvocation(String aUsername,
