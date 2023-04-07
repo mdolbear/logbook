@@ -80,7 +80,7 @@ public class OauthAccessController {
             @ApiResponse(responseCode = "400",
                     description = "General client error"),
             @ApiResponse(responseCode = "500",
-                    description = "General server error (check the server's logs for more info)")
+                    description = "General server error")
     })
     @PostMapping("/refreshToken")
     public ResponseEntity<OauthToken> refreshToken(@RequestParam String aRefreshToken,
@@ -91,6 +91,12 @@ public class OauthAccessController {
     }
 
 
+    /**
+     * Answer a keycloak user
+     * @param authentication Authentication
+     * @param username String
+     * @return KeycloakUserDTO
+     */
     @Operation(summary = "Gets a Keycloak user",
             description = "Gets a user from Keycloak.")
     @ApiResponses(value = {
@@ -99,12 +105,11 @@ public class OauthAccessController {
             @ApiResponse(responseCode = "400",
                     description = "General client error"),
             @ApiResponse(responseCode = "500",
-                    description = "General server error (check the server's logs for more info)")
+                    description = "General server error")
     })
-    @GetMapping("/user/retrieve")
+    @GetMapping("/user")
     public ResponseEntity<KeycloakUserDTO>
                 retrieveUser(Authentication authentication,
-                             @RequestParam(required = false) String organizationId,
                              @RequestParam String username) {
 
         UserAuthDTO tempResult = this.getOauthAccessService().retrieveUser(username);
@@ -129,11 +134,10 @@ public class OauthAccessController {
     })
     //TODO - need validation at the user admin level to perform this operation
     ///TODO - Will need to validate that Authentication has principal with role of Admin
-    @PostMapping("/user/create")
+    @PostMapping("/user")
     public ResponseEntity<KeycloakUserDTO>
                 createUser(@RequestParam String username,
-                           @RequestParam String password,
-                           @RequestParam String aSupplierId) {
+                           @RequestParam String password) {
 
         UserAuthDTO tempResult =
                 this.getOauthAccessService().createUser(username, password);
