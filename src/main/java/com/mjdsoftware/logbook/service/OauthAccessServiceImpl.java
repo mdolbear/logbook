@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class OauthAccessServiceImpl implements OauthAccessService {
 
@@ -81,10 +84,10 @@ public class OauthAccessServiceImpl implements OauthAccessService {
      * Retrieve User
      *
      * @param aUsername String
-     * @return OauthToken
+     * @return List
      */
     @Override
-    public UserAuthDTO retrieveUser(@NonNull String aUsername) {
+    public List<UserAuthDTO> retrieveUser(@NonNull String aUsername) {
 
         return this.getKeycloakUtilities().retrieveUser(this.retrieveAdminToken(), aUsername);
 
@@ -100,9 +103,20 @@ public class OauthAccessServiceImpl implements OauthAccessService {
     public UserAuthDTO createUser(@NonNull String username,
                                   @NonNull String password) {
 
+        Optional<UserAuthDTO> tempUser;
+        UserAuthDTO           tempResult = null;
 
         this.getKeycloakUtilities().createUser(this.retrieveAdminToken(), username, password);
-        return this.getKeycloakUtilities().retrieveUser(this.retrieveAdminToken(), username);
+        tempUser = this.getKeycloakUtilities().
+                        retrieveUser(this.retrieveAdminToken(), username)
+                       .stream()
+                       .findFirst();
+
+        if (tempUser.isPresent()) {
+            tempResult = tempUser.get();
+        }
+
+        return tempResult;
 
     }
 

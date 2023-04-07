@@ -18,6 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/oauth")
@@ -108,11 +111,11 @@ public class OauthAccessController {
                     description = "General server error")
     })
     @GetMapping("/user")
-    public ResponseEntity<KeycloakUserDTO>
+    public ResponseEntity<List<KeycloakUserDTO>>
                 retrieveUser(Authentication authentication,
                              @RequestParam String username) {
 
-        UserAuthDTO tempResult = this.getOauthAccessService().retrieveUser(username);
+        List<UserAuthDTO> tempResult = this.getOauthAccessService().retrieveUser(username);
         return this.createSuccessfulResponse(tempResult);
     }
 
@@ -194,6 +197,21 @@ public class OauthAccessController {
         tempResult = this.createFrom(aUser);
 
         return new ResponseEntity<>(tempResult, HttpStatus.OK);
+
+    }
+
+    /**
+     * Create response with success status
+     * @param aUsers List
+     * @return ResponseEntity
+     */
+    private ResponseEntity<List<KeycloakUserDTO>> createSuccessfulResponse(List<UserAuthDTO> aUsers) {
+
+        List<KeycloakUserDTO> tempResults;
+
+        tempResults = aUsers.stream().map(ua->this.createFrom(ua)).collect(Collectors.toList());
+
+        return new ResponseEntity<>(tempResults, HttpStatus.OK);
 
     }
 

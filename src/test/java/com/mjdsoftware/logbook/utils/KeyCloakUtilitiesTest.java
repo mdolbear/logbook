@@ -20,6 +20,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.ResourceAccessException;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
@@ -170,18 +172,25 @@ public class KeyCloakUtilitiesTest {
      */
     private UserAuthDTO basicRetrieveUser(String aUsername) {
 
-        OauthToken  tempToken;
-        UserAuthDTO     tempUser;
+        OauthToken          tempToken;
+        UserAuthDTO         tempUser = null;
+        List<UserAuthDTO>   tempUsers;
 
         tempToken = this.basicRetrieveAdminToken();
+
 
         assertTrue("Failed to retrieve admin token",
                 tempToken != null
                              && tempToken.getAccessToken() != null);
 
-        tempUser =
+        tempUsers =
                 this.getKeycloakUtilities().retrieveUser(tempToken,
                                                          aUsername);
+
+        if (!tempUsers.isEmpty()) {
+
+            tempUser = tempUsers.get(0);
+        }
 
         return tempUser;
     }

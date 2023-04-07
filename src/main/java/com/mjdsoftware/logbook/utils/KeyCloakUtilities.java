@@ -19,9 +19,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @NoArgsConstructor
@@ -130,7 +128,7 @@ public class KeyCloakUtilities {
      * @param aToken OauthToken
      * @return OauthToken
      */
-    public UserAuthDTO retrieveUser(@NonNull OauthToken aToken,
+    public List<UserAuthDTO> retrieveUser(@NonNull OauthToken aToken,
                                     @NonNull String aUserNameToFind)  {
 
         String                                      tempUrl;
@@ -156,12 +154,7 @@ public class KeyCloakUtilities {
 
 
     /**
-     * Create a keycloak. To facilitate Multi-tenancy with Keycloak, there are two types of users:
-     * 1) Org Owned Users - These are users that belong to an organization.
-     * 2) Special Users - These types of users have access to all organizations.
-     *
-     * Sending a null anOrganizationId will create the special type of user. Otherwise, specify anOrganizationId
-     * to create an org-owned user.
+     * Create a keycloak user
      *
      * @param aToken OauthToken
      * @param aUsername String
@@ -200,19 +193,22 @@ public class KeyCloakUtilities {
                                        @NonNull Map<String, Object> aCustomClaimChanges)  {
 
 
-        UserAuthDTO                    tempUser;
+        Optional<UserAuthDTO>          tempUser;
 
-        //Find user
+        //Find user - pick first one
         tempUser = this.retrieveUser(aToken,
-                                     aUsernameToModify);
+                                     aUsernameToModify)
+                        .stream()
+                        .findFirst();
+
         this.validateReturnedUser(tempUser,
                                   aUsernameToModify);
 
         //Modify returned user
-        this.modifyUserWithAttributes(tempUser, aCustomClaimChanges);
+        this.modifyUserWithAttributes(tempUser.get(), aCustomClaimChanges);
 
         //Modify claims
-        this.modifyUserViaPutInvocation(aToken, tempUser);
+        this.modifyUserViaPutInvocation(aToken, tempUser.get());
 
 
     }
@@ -331,10 +327,10 @@ public class KeyCloakUtilities {
      * Validate returned user
      * @param aUser UserAuthDTO
      */
-    private void validateReturnedUser(UserAuthDTO aUser,
+    private void validateReturnedUser(Optional<UserAuthDTO> aUser,
                                       String aUsername) {
 
-        if (aUser == null || aUser.getUsername() == null || aUser.getId() == null) {
+        if (aUser.isEmpty() || aUser.get().getUsername() == null || aUser.get().getId() == null) {
 
             throw new RuntimeException("Invalid user returned from REST call: " + aUsername
                     + " from user query");
@@ -348,22 +344,21 @@ public class KeyCloakUtilities {
      * @param anEntity ResponseEntity
      * @return String
      */
-    private UserAuthDTO
+    private List<UserAuthDTO>
     diagnoseAndReturnUserResult(ResponseEntity<List<UserAuthDTO>> anEntity) {
 
-        List<UserAuthDTO> tempRepresentation;
+        List<UserAuthDTO> tempRepresentations = new ArrayList<>();
 
 
-        tempRepresentation = anEntity.getBody();
+        tempRepresentations = anEntity.getBody();
         if (!anEntity.getStatusCode().equals(HttpStatus.OK) ||
-                        tempRepresentation == null) {
+                        tempRepresentations == null) {
 
             throw new RuntimeException("Error returned from REST call: " + anEntity.getStatusCode()
                     + " for token result invocation");
         }
 
-        //Create return result
-        return this.asUserAuthDTO(tempRepresentation);
+        return tempRepresentations;
 
 
     }

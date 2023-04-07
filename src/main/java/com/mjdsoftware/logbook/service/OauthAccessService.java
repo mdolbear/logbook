@@ -4,6 +4,8 @@ package com.mjdsoftware.logbook.service;
 import com.mjdsoftware.logbook.dto.oauth.OauthToken;
 import com.mjdsoftware.logbook.dto.oauth.UserAuthDTO;
 
+import java.util.List;
+
 public interface OauthAccessService {
 
     /**
@@ -28,9 +30,9 @@ public interface OauthAccessService {
      * Retrieve User
      *
      * @param username String
-     * @return OauthToken
+     * @return Lost
      */
-    public UserAuthDTO retrieveUser(String username);
+    public List<UserAuthDTO> retrieveUser(String username);
 
     /**
      * Create user

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true,value={"separateUsername","organizationId"})
+@JsonIgnoreProperties(ignoreUnknown = true,value={"separateUsername"})
 public class UserAuthDTO {
 
     private String id;
