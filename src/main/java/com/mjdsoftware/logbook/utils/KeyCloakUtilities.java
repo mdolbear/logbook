@@ -18,6 +18,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
 
@@ -25,9 +26,6 @@ import java.util.*;
 @NoArgsConstructor
 @Slf4j
 public class KeyCloakUtilities {
-
-    //Constants
-    private static final String DEFAULT_TOKEN_CLIENT_ID = "newClient";
 
     @Getter(value = AccessLevel.PRIVATE)
     @Setter(value = AccessLevel.PROTECTED)
@@ -93,12 +91,15 @@ public class KeyCloakUtilities {
 
 
     private static final String TOKEN_URI_2 = "/protocol/openid-connect/token";
-    private static final String FIND_USER_URI_2 = "/users?username=";
+    private static final String FIND_USER_URI_2 = "/users";
     private static final String PUT_USER_URI_2 = "/users/";
     private static final String CREATE_USER_URI_2 = "/users";
     private static final String DELETE_USER_URI_2 = "/users/";
 
     private String HTTP = "http://";
+
+    private static final String DEFAULT_TOKEN_CLIENT_ID = "newClient";
+    private static final String USERNAME_QUERY_PARAM_TOKEN = "username";
 
 
     /**
@@ -647,9 +648,14 @@ public class KeyCloakUtilities {
      */
     private String formulateFindUserUrl(String aUsername) {
 
-        return HTTP + this.getAuthorizationServerHostName() +
-                this.getAuthorizationServerUserUri() +
-                this.getAuthorizationServerRealmName() + FIND_USER_URI_2 + aUsername;
+        return UriComponentsBuilder.fromHttpUrl(HTTP
+                                                + this.getAuthorizationServerHostName()
+                                                + this.getAuthorizationServerUserUri()
+                                                + this.getAuthorizationServerRealmName()
+                                                + FIND_USER_URI_2)
+                                    .queryParam(USERNAME_QUERY_PARAM_TOKEN, aUsername)
+                                    .toUriString();
+
     }
 
     /**
