@@ -22,13 +22,24 @@ public interface LogbookEntryRepository extends JpaRepository<LogbookEntry, Long
 
     /**
      * Find all lite logbook entries for aLogbook
-     * @param aLogbook Logbook
+     * @param id Long
+     *
      * @return List
      */
     @Query("select new com.mjdsoftware.logbook.dto.LogbookEntryDTO(ent.id, ent.activityDate, " +
             "ent.version) " +
-            " from LogbookEntry ent order by ent.activityDate desc")
-    public List<LogbookEntryDTO> findAllByLogbook(Logbook aLogbook);
+            " from LogbookEntry ent where ent.logbook.id = :id order by ent.activityDate desc")
+    public List<LogbookEntryDTO> findAllByLogbook(Long id);
+
+    /**
+     * Find all lite logbook entries for aLogbook
+     * @param id Long
+     * @return List
+     */
+    @Query("select new com.mjdsoftware.logbook.dto.LogbookEntryDTO(ent.id, ent.activityDate, " +
+            "ent.version) " +
+            " from LogbookEntry  ent  where ent.logbook.id = :id order by ent.activityDate desc")
+    public List<LogbookEntryDTO> findAllByLogbook(Long id, Pageable pageable);
 
     /**
      * Answer the count of logbook entries for aLogbook

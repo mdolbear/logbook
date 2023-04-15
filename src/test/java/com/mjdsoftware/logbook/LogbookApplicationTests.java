@@ -147,7 +147,6 @@ public class LogbookApplicationTests {
 		LogbookDTO 												tempLogbookDTO;
 		LogbookEntryDTO 									    tempEntryDTO;
 		ResponseEntity<List<LogbookEntryDTO>>					tempResults;
-		List<LogbookEntryDTO>									tempEntries;
 
 
 		//Create logbook and logbook entries
@@ -175,6 +174,44 @@ public class LogbookApplicationTests {
 	}
 
 	/**
+	 * Create, finddall, and delete logbook entry
+	 */
+	@Test
+	public void createFindAllAndDeleteLogbookEntry() {
+
+		LogbookDTO 												tempLogbookDTO;
+		LogbookEntryDTO 									    tempEntryDTO;
+		ResponseEntity<List<LogbookEntryDTO>>					tempResults;
+		Long													tempDeletedId;
+
+
+		//Create logbook and logbook entries
+		tempLogbookDTO = this.basicCreateLogbook();
+		tempEntryDTO = this.basicCreateLogbookEntry(tempLogbookDTO);
+
+		//Try to find them. We should find at least one
+		tempResults = this.getLogbookController()
+						  .findLogbookEntries(tempLogbookDTO.getId(),
+									0, 10);
+		assertTrue(this.isFindByIdLogbookEntriesResultValid(tempResults),
+				"Logbook entry find paged failed");
+
+		//Delete created entry
+		tempDeletedId = tempEntryDTO.getId();
+		this.getLogbookController().deleteLogbookEntry(tempEntryDTO.getId());
+
+		//Try to find them. We should not find any
+		tempResults = this.getLogbookController()
+						  .findAllLogbookEntries(tempLogbookDTO.getId(),
+									 0,
+									   10);
+		assertTrue(this.isFindByIdLogbookEntriesResultEmpty(tempResults),
+				"Logbook entry find paged not empty");
+
+	}
+
+
+	/**
 	 * Answer whether the logbook entey results are valid
 	 * @param anEntries ResponseEntity
 	 * @return boolean
@@ -199,6 +236,7 @@ public class LogbookApplicationTests {
 				  anEntries.getBody().isEmpty();
 
 	}
+
 
 	/**
 	 * Create a logbookEntry

@@ -279,6 +279,36 @@ public class LogbookController {
     }
 
     /**
+     * Find all logbook entries for a logbook identified by id. Answer based on pageNumber
+     * and pageSize
+     * @param logbookId Long
+     * @param pageNumber int
+     * @param pageSize int
+     * @return ResponseEntity
+     */
+    @GetMapping("logbook/{logbookId}/all-entries/{pageNumber}/{pageSize}")
+    public ResponseEntity<List<LogbookEntryDTO>> findAllLogbookEntries(@PathVariable Long logbookId,
+                                                                       @PathVariable int pageNumber,
+                                                                       @PathVariable int pageSize) {
+
+        List<LogbookEntryDTO> tempEntries = new ArrayList<LogbookEntryDTO>();
+        Logbook               tempLogbook;
+
+        tempLogbook = this.getLogbookService().findLogbookById(logbookId);
+        if (tempLogbook != null) {
+
+            tempEntries =
+                    this.getLogbookEntryService().findAllLogbookEntriesForLogbook(tempLogbook,
+                            pageNumber,
+                            pageSize);
+        }
+
+        return new ResponseEntity<>(tempEntries,
+                HttpStatus.OK);
+
+    }
+
+    /**
      * Answer aLogbookEntries as value objects
      * @param aLogbookEntries List
      * @return List

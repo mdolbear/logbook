@@ -201,7 +201,41 @@ public class LogbookEntryServiceImpl extends AbstractServiceImpl implements Logb
     @Transactional
     public List<LogbookEntryDTO> findAllLogbookEntriesForLogbook(@NonNull Logbook aLogbook) {
 
-        return this.getLogbookEntryRepository().findAllByLogbook(aLogbook);
+        this.validateId(getLogger(),
+              "Invalid id for findAllLogbookEntriresForLogbook",
+                        aLogbook.getId());
+
+        return this.getLogbookEntryRepository().findAllByLogbook(aLogbook.getId());
+    }
+
+    /**
+     * Answer all logbook entries associated with aLogbook for a given page number and size
+     * @param aLogbook Logbook
+     * @param aPageNumber int
+     * @param aPageSize int
+     * @return List
+     */
+    @Override
+    @Transactional
+    public List<LogbookEntryDTO> findAllLogbookEntriesForLogbook(@NonNull Logbook aLogbook,
+                                                                 int aPageNumber,
+                                                                 int aPageSize) {
+
+        List<LogbookEntryDTO>   tempResults;
+        Sort                    tempDefaultSort = Sort.by(Sort.Direction.DESC,
+                                              "activityDate");
+        Pageable                tempPage;
+
+
+        this.validateId(getLogger(),
+                "Invalid id for findAllLogbookEntriresForLogbook",
+                        aLogbook.getId());
+        tempPage = PageRequest.of(aPageNumber, aPageSize, tempDefaultSort);
+        tempResults = this.getLogbookEntryRepository()
+                          .findAllByLogbook(aLogbook.getId(), tempPage);
+
+        return tempResults;
+
     }
 
     /**
@@ -213,7 +247,12 @@ public class LogbookEntryServiceImpl extends AbstractServiceImpl implements Logb
     @Transactional
     public Long findLogbookEntryCount(@NonNull Logbook aLogbook) {
 
+        this.validateId(getLogger(),
+                "Invalid id for findLogbookEntryCount",
+                        aLogbook.getId());
+
         return this.getLogbookEntryRepository().getCountByLogbookId(aLogbook.getId());
+
     }
 
 

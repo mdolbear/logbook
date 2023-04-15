@@ -70,5 +70,14 @@ public interface LogbookEntryService {
      */
     public Long findLogbookEntryCount(Logbook aLogbook);
 
-
+    /**
+     * Answer all logbook entries associated with aLogbook for a given page number and size
+     * @param aLogbook Logbook
+     * @param aPageNumber int
+     * @param aPageSize int
+     * @return List
+     */
+    public List<LogbookEntryDTO> findAllLogbookEntriesForLogbook(@NonNull Logbook aLogbook,
+                                                                 int aPageNumber,
+                                                                 int aPageSize);
 }
