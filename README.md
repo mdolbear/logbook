@@ -67,7 +67,21 @@ token. Then you should be able to interact with the Logbook Controller via swagg
    ![](docs/authorizeButton.png)
 
 
-7. Project next steps:
+7. Something to note. I have put the actuator on port 8081 in this project. Its not exposed through the ingress, so the
+only way you can get to it is by doing a port-forward. For example on logbook, do 
+```
+
+   kubectl port-forward logbook-pod-goes-here 8081:8081
+   Then go to a browser and enter http://localhost:8081/actuator
+   and you should see thew basic actuator response.
+   Entering http://localhost:8081/actuator/health in a browser should also work.
+   The actuator/health uri is used in the logbook deployment yaml for liveness and readiness probes.
+   
+   
+```
+
+
+8. Project next steps:
 
     -Role-based security
 
