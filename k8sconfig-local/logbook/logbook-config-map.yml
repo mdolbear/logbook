@@ -22,6 +22,11 @@ data:
       authorizationServerAdminTokenUri: /realms/master/protocol/openid-connect/token
       authorizationServerUserUri: /admin/realms/
     
+    info:
+      app:
+        name: ${app.applicationName}
+        description: ${app.applicationName} is a Spring Boot application
+
     ---
     springdoc:
       api-docs:
