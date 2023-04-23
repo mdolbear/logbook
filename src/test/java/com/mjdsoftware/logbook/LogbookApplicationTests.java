@@ -7,6 +7,7 @@ import com.mjdsoftware.logbook.dto.ActivityDTO;
 import com.mjdsoftware.logbook.dto.CommentDTO;
 import com.mjdsoftware.logbook.dto.LogbookDTO;
 import com.mjdsoftware.logbook.dto.LogbookEntryDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Date;
 import java.util.List;
@@ -24,13 +30,19 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-@SpringBootTest
+@SpringBootTest(classes = LogbookApplication.class)
 @DirtiesContext
+@WithMockUser(username="athelete", password = "athelete")
+@ActiveProfiles("test")
 public class LogbookApplicationTests {
 
 	@Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
 	@Autowired
 	private LogbookController logbookController;
+
+	@Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
+	@Autowired
+	private HttpServletRequest servletRequest;
 
 
 	/**
@@ -49,11 +61,16 @@ public class LogbookApplicationTests {
 		ResponseEntity<List<LogbookDTO>> tempLogbooks;
 
 
-		tempLogbooks = this.getLogbookController().findAllLogbooks();
+		tempLogbooks = this.getLogbookController().findAllLogbooks(this.getAuthentication(),
+																   this.getServletRequest(),
+																	this.createJwtToken());
+
 		assertTrue(this.isFindAllLogbooksResultValid(tempLogbooks),
 			"Find All Logbooks Failed");
 
 	}
+
+
 
 	/**
 	 * Create logbook test
@@ -64,7 +81,11 @@ public class LogbookApplicationTests {
 		LogbookDTO tempLogbook = basicCreateLogbook();
 		ResponseEntity<LogbookDTO> tempResult;
 
-		tempResult = this.getLogbookController().findLogbookByName(tempLogbook.getName());
+		tempResult = this.getLogbookController().findLogbookByName(this.getAuthentication(),
+																   this.getServletRequest(),
+																	this.createJwtToken(),
+																   tempLogbook.getName());
+
 		assertTrue(this.isFindByNameLogbookResultValid(tempResult, tempLogbook.getName()),
 				"Logbook find by name failed");
 	}
@@ -81,7 +102,10 @@ public class LogbookApplicationTests {
 		tempLogbook = new LogbookDTO();
 		tempLogbook.setName("NewLogbook" + (new Date()).getTime());
 
-		tempResult = this.getLogbookController().createLogbook(tempLogbook);
+		tempResult = this.getLogbookController().createLogbook(this.getAuthentication(),
+															   this.getServletRequest(),
+																this.createJwtToken(),
+															   tempLogbook);
 		assertTrue(this.isCreateLogbookResultValid(tempResult),
 					  "Logbook creation failed");
 		tempLogbook = tempResult.getBody();
@@ -155,19 +179,29 @@ public class LogbookApplicationTests {
 
 		//Try to find them. We should find at least one
 		tempResults = this.getLogbookController()
-						  .findLogbookEntries(tempLogbookDTO.getId(),
-								  			  0, 10);
+						  .findLogbookEntries(this.getAuthentication(),
+											  this.getServletRequest(),
+								  			  this.createJwtToken(),
+											  tempLogbookDTO.getId(),
+								  			  0,
+								                 10);
 		assertTrue(this.isFindByIdLogbookEntriesResultValid(tempResults),
 				"Logbook entry find paged failed");
 
 		//Delete created entry
-		this.getLogbookController().deleteLogbookEntry(tempEntryDTO.getId());
+		this.getLogbookController().deleteLogbookEntry(this.getAuthentication(),
+													  this.getServletRequest(),
+													  this.createJwtToken(),
+													  tempEntryDTO.getId());
 
 		//Try to find them. We should not find any
 		tempResults = this.getLogbookController()
-						  .findLogbookEntries(tempLogbookDTO.getId(),
-								  0,
-								     10);
+						  .findLogbookEntries(this.getAuthentication(),
+											  this.getServletRequest(),
+								  			  this.createJwtToken(),
+											  tempLogbookDTO.getId(),
+											  0,
+												 10);
 		assertTrue(this.isFindByIdLogbookEntriesResultEmpty(tempResults),
 				"Logbook entry find paged not empty");
 
@@ -191,20 +225,30 @@ public class LogbookApplicationTests {
 
 		//Try to find them. We should find at least one
 		tempResults = this.getLogbookController()
-						  .findLogbookEntries(tempLogbookDTO.getId(),
-									0, 10);
+						  .findLogbookEntries(this.getAuthentication(),
+								  			  this.getServletRequest(),
+								  			  this.createJwtToken(),
+								  			  tempLogbookDTO.getId(),
+									0,
+								  		10);
 		assertTrue(this.isFindByIdLogbookEntriesResultValid(tempResults),
 				"Logbook entry find paged failed");
 
 		//Delete created entry
 		tempDeletedId = tempEntryDTO.getId();
-		this.getLogbookController().deleteLogbookEntry(tempEntryDTO.getId());
+		this.getLogbookController().deleteLogbookEntry(this.getAuthentication(),
+														this.getServletRequest(),
+														this.createJwtToken(),
+														tempEntryDTO.getId());
 
 		//Try to find them. We should not find any
 		tempResults = this.getLogbookController()
-						  .findAllLogbookEntries(tempLogbookDTO.getId(),
-									 0,
-									   10);
+						  .findAllLogbookEntries(this.getAuthentication(),
+								                 this.getServletRequest(),
+								  				 this.createJwtToken(),
+								  				 tempLogbookDTO.getId(),
+													 0,
+													   10);
 		assertTrue(this.isFindByIdLogbookEntriesResultEmpty(tempResults),
 				"Logbook entry find paged not empty");
 
@@ -253,8 +297,11 @@ public class LogbookApplicationTests {
 		tempEntryDTO = this.createLogbookEntryDTO();
 		tempResult =
 				this.getLogbookController()
-					.createLogbookEntry(aLogbookDTO.getId(),
-										tempEntryDTO);
+					.createLogbookEntry(this.getAuthentication(),
+										this.getServletRequest(),
+									    this.createJwtToken(),
+										aLogbookDTO.getId(),
+									    tempEntryDTO);
 
 		assertTrue(this.isCreateLogbookEntryResultValid(tempResult),
 				"LogbookEntry creation failed");
@@ -318,7 +365,10 @@ public class LogbookApplicationTests {
 		tempEntryDTO = this.basicCreateLogbookEntry(tempLogbookDTO);
 
 		//Create activity
-		tempActivityResult = this.getLogbookController().createLActivity(tempLogbookDTO.getId(),
+		tempActivityResult = this.getLogbookController().createLActivity(this.getAuthentication(),
+																		this.getServletRequest(),
+																		this.createJwtToken(),
+																		tempLogbookDTO.getId(),
 																		 tempEntryDTO.getId(),
 																		 this.createActivityDTO());
 
@@ -328,7 +378,10 @@ public class LogbookApplicationTests {
 
 		//Find activities for logbook entry
 		tempActivityResults =
-				this.getLogbookController().findAllActivitiesForEntry(tempLogbookDTO.getId(),
+				this.getLogbookController().findAllActivitiesForEntry(this.getAuthentication(),
+																	 this.getServletRequest(),
+																     this.createJwtToken(),
+																	 tempLogbookDTO.getId(),
 																	  tempEntryDTO.getId());
 		assertTrue(this.isFindActivitiesByLogbookEntryResultsValid(tempActivity, tempActivityResults),
 				  "Find activity for logbook entry failed");
@@ -336,13 +389,19 @@ public class LogbookApplicationTests {
 
 
 		//Delete created entry
-		this.getLogbookController().deleteLogbookEntry(tempEntryDTO.getId());
+		this.getLogbookController().deleteLogbookEntry(this.getAuthentication(),
+													  this.getServletRequest(),
+													  this.createJwtToken(),
+													  tempEntryDTO.getId());
 
 		//Try to find them. We should not find any
 		tempLogbookEntryResults = this.getLogbookController()
-									  .findLogbookEntries(tempLogbookDTO.getId(),
-											 0,
-												10);
+									  .findLogbookEntries(this.getAuthentication(),
+														  this.getServletRequest(),
+											  			  this.createJwtToken(),
+														  tempLogbookDTO.getId(),
+														 0,
+															10);
 		assertTrue(this.isFindByIdLogbookEntriesResultEmpty(tempLogbookEntryResults),
 				"Logbook entry find paged not empty");
 
@@ -431,27 +490,39 @@ public class LogbookApplicationTests {
 
 		//Try to find them. We should find at least one
 		tempResults = this.getLogbookController()
-						  .findLogbookEntries(tempLogbookDTO.getId(),
-									0, 10);
+						  .findLogbookEntries(this.getAuthentication(),
+											  this.getServletRequest(),
+								  			  this.createJwtToken(),
+											  tempLogbookDTO.getId(),
+												0, 10);
 		assertTrue(this.isFindByIdLogbookEntriesResultValid(tempResults),
 				"Logbook entry find paged failed");
 
 		//Modify entry comments
 		tempEntryDTO.getComments().get(0).setCommentContents("Modified version of whatever we retrieved");
 		tempModifiedEntry = this.getLogbookController()
-								.modifyLogbookEntry(tempLogbookDTO.getId(), tempEntryDTO);
+								.modifyLogbookEntry(this.getAuthentication(),
+													this.getServletRequest(),
+													this.createJwtToken(),
+													tempLogbookDTO.getId(), tempEntryDTO);
 		assertTrue(this.isModifiedLogbookEntryCommentFound(tempModifiedEntry),
 				"Logbook entry modified comment not found");
 
 
 		//Delete created entry
-		this.getLogbookController().deleteLogbookEntry(tempEntryDTO.getId());
+		this.getLogbookController().deleteLogbookEntry(this.getAuthentication(),
+													   this.getServletRequest(),
+													   this.createJwtToken(),
+													   tempEntryDTO.getId());
 
 		//Try to find them. We should not find any
 		tempResults = this.getLogbookController()
-					      .findLogbookEntries(tempLogbookDTO.getId(),
-								0,
-								10);
+					      .findLogbookEntries(this.getAuthentication(),
+											  this.getServletRequest(),
+								  			  this.createJwtToken(),
+											  tempLogbookDTO.getId(),
+											0,
+											10);
 		assertTrue(this.isFindByIdLogbookEntriesResultEmpty(tempResults),
 				"Logbook entry find paged not empty");
 
@@ -472,5 +543,28 @@ public class LogbookApplicationTests {
 											.isEmpty();
 	}
 
+	/**
+	 * Answer the authentication for my test
+	 * @return Authentication
+	 */
+	private Authentication getAuthentication() {
+		return SecurityContextHolder.getContext().getAuthentication();
+	}
+
+
+	/**
+	 * Create jwt token
+	 * @return Jwt
+	 */
+	private Jwt createJwtToken() {
+
+		Jwt jwt = Jwt.withTokenValue("token")
+				.header("alg", "none")
+				.claim("scope", "message:read")
+				.claim("preferred_username", "athelete")
+				.build();
+
+		return jwt;
+	}
 
 }

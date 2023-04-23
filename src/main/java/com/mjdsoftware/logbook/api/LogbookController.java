@@ -6,9 +6,11 @@ import com.mjdsoftware.logbook.domain.entities.LogbookEntry;
 import com.mjdsoftware.logbook.dto.ActivityDTO;
 import com.mjdsoftware.logbook.dto.LogbookDTO;
 import com.mjdsoftware.logbook.dto.LogbookEntryDTO;
+import com.mjdsoftware.logbook.security.MethodSecurityService;
 import com.mjdsoftware.logbook.service.ActivityService;
 import com.mjdsoftware.logbook.service.LogbookEntryService;
 import com.mjdsoftware.logbook.service.LogbookService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,6 +20,10 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -73,7 +79,10 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @GetMapping("logbooks")
-    public ResponseEntity<List<LogbookDTO>> findAllLogbooks() {
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public ResponseEntity<List<LogbookDTO>> findAllLogbooks(Authentication authentication,
+                                                            HttpServletRequest servletRequest,
+                                                            @AuthenticationPrincipal Jwt token) {
 
         List<Logbook> tempLogbooks;
 
@@ -90,7 +99,11 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @GetMapping("logbook/{name}")
-    public ResponseEntity<LogbookDTO> findLogbookByName(@PathVariable String name) {
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public ResponseEntity<LogbookDTO> findLogbookByName(Authentication authentication,
+                                                        HttpServletRequest servletRequest,
+                                                        @AuthenticationPrincipal Jwt token,
+                                                        @PathVariable String name) {
 
         Logbook tempResult;
 
@@ -108,7 +121,11 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @PostMapping("/logbook")
-    public ResponseEntity<LogbookDTO> createLogbook(@Valid @RequestBody LogbookDTO aLogbookVO) {
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public ResponseEntity<LogbookDTO> createLogbook(Authentication authentication,
+                                                    HttpServletRequest servletRequest,
+                                                    @AuthenticationPrincipal Jwt token,
+                                                    @Valid @RequestBody LogbookDTO aLogbookVO) {
 
         Logbook tempResult;
 
@@ -158,7 +175,11 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @PostMapping("logbook/{logbookId}/entry")
-    public ResponseEntity<LogbookEntryDTO> createLogbookEntry(@PathVariable Long logbookId,
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public ResponseEntity<LogbookEntryDTO> createLogbookEntry(Authentication authentication,
+                                                              HttpServletRequest servletRequest,
+                                                              @AuthenticationPrincipal Jwt token,
+                                                              @PathVariable Long logbookId,
                                                               @Valid @RequestBody LogbookEntryDTO aLogbookEntryVO) {
 
         LogbookEntry tempResult = null;
@@ -209,7 +230,11 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @PutMapping("logbook/{logbookId}/entry")
-    public ResponseEntity<LogbookEntryDTO> modifyLogbookEntry(@PathVariable Long logbookId,
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public ResponseEntity<LogbookEntryDTO> modifyLogbookEntry(Authentication authentication,
+                                                              HttpServletRequest servletRequest,
+                                                              @AuthenticationPrincipal Jwt token,
+                                                              @PathVariable Long logbookId,
                                                               @Valid @RequestBody LogbookEntryDTO aLogbookEntryVO) {
 
         LogbookEntry tempResult = null;
@@ -241,7 +266,11 @@ public class LogbookController {
      * @param logbookEntryId Long
      */
     @DeleteMapping("logbook/entry/{logbookEntryId}")
-    public void deleteLogbookEntry(Long logbookEntryId) {
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public void deleteLogbookEntry(Authentication authentication,
+                                   HttpServletRequest servletRequest,
+                                   @AuthenticationPrincipal Jwt token,
+                                   Long logbookEntryId) {
 
         this.getLogbookEntryService().deleteLogbookEntry(logbookEntryId);
 
@@ -257,7 +286,11 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @GetMapping("logbook/{logbookId}/entries/{pageNumber}/{pageSize}")
-    public ResponseEntity<List<LogbookEntryDTO>> findLogbookEntries(@PathVariable Long logbookId,
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public ResponseEntity<List<LogbookEntryDTO>> findLogbookEntries(Authentication authentication,
+                                                                    HttpServletRequest servletRequest,
+                                                                    @AuthenticationPrincipal Jwt token,
+                                                                    @PathVariable Long logbookId,
                                                                     @PathVariable int pageNumber,
                                                                     @PathVariable int pageSize) {
 
@@ -287,7 +320,11 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @GetMapping("logbook/{logbookId}/all-entries/{pageNumber}/{pageSize}")
-    public ResponseEntity<List<LogbookEntryDTO>> findAllLogbookEntries(@PathVariable Long logbookId,
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public ResponseEntity<List<LogbookEntryDTO>> findAllLogbookEntries(Authentication authentication,
+                                                                       HttpServletRequest servletRequest,
+                                                                       @AuthenticationPrincipal Jwt token,
+                                                                       @PathVariable Long logbookId,
                                                                        @PathVariable int pageNumber,
                                                                        @PathVariable int pageSize) {
 
@@ -329,7 +366,11 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @PostMapping("logbook/{logbookId}/entry/{logbookEntryId}/activity")
-    public ResponseEntity<ActivityDTO> createLActivity(@PathVariable Long logbookId,
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public ResponseEntity<ActivityDTO> createLActivity(Authentication authentication,
+                                                       HttpServletRequest servletRequest,
+                                                       @AuthenticationPrincipal Jwt token,
+                                                       @PathVariable Long logbookId,
                                                        @PathVariable Long logbookEntryId,
                                                        @Valid @RequestBody ActivityDTO anActivityDTO) {
 
@@ -372,7 +413,11 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @PutMapping("logbook/{logbookId}/entry/{logbookEntryId}/activity")
-    public ResponseEntity<ActivityDTO> modifyActivity(@PathVariable Long logbookId,
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public ResponseEntity<ActivityDTO> modifyActivity(Authentication authentication,
+                                                      HttpServletRequest servletRequest,
+                                                      @AuthenticationPrincipal Jwt token,
+                                                      @PathVariable Long logbookId,
                                                       @PathVariable Long logbookEntryId,
                                                       @Valid @RequestBody ActivityDTO anActivityDTO) {
 
@@ -414,7 +459,11 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @GetMapping("logbook/{logbookId}/entry/{logbookEntryId}/activities")
-    public ResponseEntity<List<ActivityDTO>> findAllActivitiesForEntry(@PathVariable Long logbookId,
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public ResponseEntity<List<ActivityDTO>> findAllActivitiesForEntry(Authentication authentication,
+                                                                       HttpServletRequest servletRequest,
+                                                                       @AuthenticationPrincipal Jwt token,
+                                                                       @PathVariable Long logbookId,
                                                                        @PathVariable Long logbookEntryId) {
 
         List<Activity>        tempResults = new ArrayList<Activity>();
@@ -486,7 +535,11 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @GetMapping("logbook/{logbookId}/entries")
-    public ResponseEntity<List<LogbookEntryDTO>> findLogbookEntries(@PathVariable Long logbookId) {
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public ResponseEntity<List<LogbookEntryDTO>> findLogbookEntries(Authentication authentication,
+                                                                    HttpServletRequest servletRequest,
+                                                                    @AuthenticationPrincipal Jwt token,
+                                                                    @PathVariable Long logbookId) {
 
         List<LogbookEntryDTO> tempEntries = new ArrayList<>();
         Logbook            tempLogbook;
@@ -510,7 +563,11 @@ public class LogbookController {
      * @return ResponseEntity
      */
     @GetMapping("logbook/{logbookId}/entriesCount")
-    public ResponseEntity<Long> findLogbookEntriesCount(@PathVariable Long logbookId) {
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    public ResponseEntity<Long> findLogbookEntriesCount(Authentication authentication,
+                                                        HttpServletRequest servletRequest,
+                                                        @AuthenticationPrincipal Jwt token,
+                                                        @PathVariable Long logbookId) {
 
         Long               tempCount = Long.valueOf(0l);
         Logbook            tempLogbook;
