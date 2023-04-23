@@ -182,15 +182,11 @@ public class Activity {
 
     /**
      * Add new comments to me
-     * @param tempNewDTOs List
+     * @param aNewDTOs List
      */
-    private void addNewComments(List<CommentDTO> tempNewDTOs) {
+    private void addNewComments(List<CommentDTO> aNewDTOs) {
 
-        for (CommentDTO aDTO: tempNewDTOs) {
-
-            this.addComment(new Comment(aDTO));
-
-        }
+        aNewDTOs.stream().forEach(dto->this.addComment(new Comment(dto)));
 
     }
 
@@ -233,4 +229,5 @@ public class Activity {
         this.setDurationUnits(aDurationUnits);
 
     }
+
 }
