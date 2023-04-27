@@ -21,6 +21,9 @@ data:
       authorizationServerTokenUri: /realms/
       authorizationServerAdminTokenUri: /realms/master/protocol/openid-connect/token
       authorizationServerUserUri: /admin/realms/
+      threadPoolCorePoolSize: 20
+      threadPoolMaxPoolSize: 100
+      threadPoolQueueCapacity: 100
     
     info:
       app:

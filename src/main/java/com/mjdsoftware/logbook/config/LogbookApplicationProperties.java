@@ -46,5 +46,13 @@ public class LogbookApplicationProperties {
     @Getter @Setter
     private String authorizationServerUserUri;
 
+    @Getter @Setter
+    private Integer threadPoolCorePoolSize;
+
+    @Getter @Setter
+    private Integer threadPoolMaxPoolSize;
+
+    @Getter @Setter
+    private Integer threadPoolQueueCapacity;
 
 }
