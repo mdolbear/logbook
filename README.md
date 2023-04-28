@@ -91,3 +91,7 @@ only way you can get to it is by doing a port-forward. For example on logbook, d
     
     -Experiment with MapStruct
 
+    -Import facility (Look at imports from Concept2, etc) -> csv file formats, etc
+
+    -Statistics
+
