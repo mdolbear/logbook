@@ -27,7 +27,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
     @Autowired
-    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PROTECTED) // exposed for unit testing
+    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private LocalizationUtils localizationUtils;
 
     //Constants
