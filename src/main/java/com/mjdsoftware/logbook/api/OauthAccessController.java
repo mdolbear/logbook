@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -101,7 +102,8 @@ public class OauthAccessController {
      * @return KeycloakUserDTO
      */
     @Operation(summary = "Gets a Keycloak user",
-            description = "Gets a user from Keycloak.")
+            description = "Gets a user from Keycloak. " +
+                    "Note that the user must be in a role of app_admin to have access.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Success"),
@@ -111,6 +113,7 @@ public class OauthAccessController {
                     description = "General server error")
     })
     @GetMapping("/user")
+    @PreAuthorize("hasAuthority('ROLE_app_admin')")
     public ResponseEntity<List<KeycloakUserDTO>>
                 retrieveUser(Authentication authentication,
                              @RequestParam String username) {
@@ -126,7 +129,8 @@ public class OauthAccessController {
      * @param password String
      */
     @Operation(summary = "Creates a Keycloak user",
-            description = "Creates a user in Keycloak.")
+            description = "Creates a user in Keycloak." +
+                    "Note that the user must be in a role of app_admin to have access.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Success"),
@@ -135,8 +139,7 @@ public class OauthAccessController {
             @ApiResponse(responseCode = "500",
                     description = "General server error (check the server's logs for more info)")
     })
-    //TODO - need validation at the user admin level to perform this operation
-    ///TODO - Will need to validate that Authentication has principal with role of Admin
+    @PreAuthorize("hasAuthority('ROLE_app_admin')")
     @PostMapping("/user")
     public ResponseEntity<KeycloakUserDTO>
                 createUser(@RequestParam String username,
@@ -153,7 +156,8 @@ public class OauthAccessController {
      * @param keycloakUserId String
      */
     @Operation(summary = "Deletes a Keycloak user",
-            description = "Deletes a user from Keycloak.")
+            description = "Deletes a user from Keycloak." +
+                    "Note that the user must be in a role of app_admin to have access.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Success"),
@@ -162,8 +166,7 @@ public class OauthAccessController {
             @ApiResponse(responseCode = "500",
                     description = "General server error (check the server's logs for more info)")
     })
-    //TODO - need validation at the user admin level to perform this operation
-    //TODO - Will need to validate that Authentication has principal with role of Admin
+    @PreAuthorize("hasAuthority('ROLE_app_admin')")
     @DeleteMapping("/user")
     public ResponseEntity<KeycloakUserDTO>
     deleteUser(@RequestParam String keycloakUserId) {

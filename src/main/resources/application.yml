@@ -20,6 +20,12 @@ app:
   threadPoolMaxPoolSize: 100
   threadPoolQueueCapacity: 100
 
+jwt:
+  auth:
+    converter:
+      resourceId: role
+      principalAttribute: preferred_username
+
 ---
 springdoc:
   api-docs:

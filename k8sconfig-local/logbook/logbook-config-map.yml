@@ -25,6 +25,12 @@ data:
       threadPoolMaxPoolSize: 100
       threadPoolQueueCapacity: 100
     
+    jwt:
+      auth:
+        converter:
+          resourceId: role
+          principalAttribute: preferred_username
+    
     info:
       app:
         name: ${app.applicationName}

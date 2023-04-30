@@ -80,10 +80,11 @@ only way you can get to it is by doing a port-forward. For example on logbook, d
    
 ```
 
+8. Added role based authentication to the OauthAccessController. Now you need to be in a realm role (from keycloak) of ROLE_app_admin to access keycloak users, as well as 
+create and delete them. This will be used again later when I add multi-tenancy.
 
-8. Project next steps:
 
-    -Role-based security
+9. Project next steps:
 
     -Api doc via open api
 
