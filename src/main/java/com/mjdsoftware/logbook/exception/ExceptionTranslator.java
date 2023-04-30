@@ -13,11 +13,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 
 /**
  *
@@ -48,6 +50,27 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     public ExceptionTranslator() {
         super();
     }
+
+
+    /**
+     * Handle internal errors
+     * @param anException Exception
+     * @param aRequest WebRequest
+     * @return RequestEntity
+     */
+    @ExceptionHandler(value = {AccessDeniedException.class})
+    public ResponseEntity<Object> handleAccessDenied(AccessDeniedException anException,
+                                                      WebRequest aRequest) {
+
+        String tempMsg =
+                this.getLocalizedMessageForExceptions(ERROR_CODE_PREFIX
+                                                      + ErrorCode.ACCESS_DENIED.name());
+        getLogger().error("Internal error: " + tempMsg, anException);
+
+        return this.handleError(anException, aRequest, HttpStatus.FORBIDDEN, tempMsg);
+
+    }
+
 
     /**
      * Handle user exceptions

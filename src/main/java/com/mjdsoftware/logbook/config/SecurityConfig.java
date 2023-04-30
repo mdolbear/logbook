@@ -48,7 +48,7 @@ public class SecurityConfig {
 
                         //Rest end point authorizations
                         .requestMatchers(HttpMethod.GET, "/api/**")
-                        .hasAnyAuthority("SCOPE_read", "SCOPE_write")
+                        .hasAuthority("SCOPE_logbook-roles")
                         .anyRequest()
                         .authenticated()
                         .and()

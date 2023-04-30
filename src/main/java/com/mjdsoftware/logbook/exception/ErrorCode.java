@@ -13,6 +13,7 @@ public enum ErrorCode {
     // Standard Java exceptions
     ILLEGAL_ARGUMENT,
     ILLEGAL_STATE,
-    NULL_POINTER
+    NULL_POINTER,
+    ACCESS_DENIED
 
 }
