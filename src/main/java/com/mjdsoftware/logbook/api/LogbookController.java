@@ -6,6 +6,7 @@ import com.mjdsoftware.logbook.domain.entities.LogbookEntry;
 import com.mjdsoftware.logbook.dto.ActivityDTO;
 import com.mjdsoftware.logbook.dto.LogbookDTO;
 import com.mjdsoftware.logbook.dto.LogbookEntryDTO;
+import com.mjdsoftware.logbook.exception.LogbookNotFoundException;
 import com.mjdsoftware.logbook.security.MethodSecurityService;
 import com.mjdsoftware.logbook.service.ActivityService;
 import com.mjdsoftware.logbook.service.LogbookEntryService;
@@ -26,6 +27,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -192,11 +194,11 @@ public class LogbookController {
                     this.getLogbookEntryService()
                         .createLogbookEntry(tempLogbook, aLogbookEntryVO);
         }
-
-        //Log message if we didn't create anything -- TBD this should probably be an error
-        if (tempLogbook == null) {
+        else {
 
             getLogger().info("Logbook was not found to create a LogbookEntry");
+            throw new LogbookNotFoundException(logbookId);
+
         }
 
         return new ResponseEntity<>(this.asValueObject(tempResult),

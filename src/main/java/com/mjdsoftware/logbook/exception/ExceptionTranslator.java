@@ -123,6 +123,31 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
                                 tempMsg);
     }
 
+    /**
+     * Handle user exceptions
+     * @param anException Exception
+     * @param aRequest WebRequest
+     * @return RequestEntity
+     */
+    @ExceptionHandler(value = {LogbookNotFoundException.class})
+    public ResponseEntity<Object> handleLogbookNotFoundException(LogbookNotFoundException anException,
+                                                                 WebRequest aRequest) {
+
+        Object[] tempArgs = {anException.getLogbookId()};
+        String tempMsg =
+                this.getLocalizedMessageForExceptions(ERROR_CODE_PREFIX + ErrorCode.LOGBOOK_NOT_FOUND.name(),
+                                                      tempArgs);
+        getLogger().error("Logbook not found exception: " + tempMsg,
+                          anException);
+
+
+        return this.handleError(anException,
+                                aRequest,
+                                HttpStatus.NOT_FOUND,
+                                tempMsg);
+
+    }
+
 
     /**
      * Handle user exceptions
@@ -210,6 +235,19 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     private String getLocalizedMessageForExceptions(String anErrorCodeKey) {
 
         return this.getLocalizationUtils().getLocalizedMessage(anErrorCodeKey,
+                                                               LocaleContextHolder.getLocale());
+    }
+
+    /**
+     * Answer a localized message based on the
+     * anErrorCode
+     * @param anErrorCodeKey String
+     * @return String
+     */
+    private String getLocalizedMessageForExceptions(String anErrorCodeKey, Object[] anArgs) {
+
+        return this.getLocalizationUtils().getLocalizedMessage(anErrorCodeKey,
+                                                               anArgs,
                                                                LocaleContextHolder.getLocale());
     }
 

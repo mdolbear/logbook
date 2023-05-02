@@ -7,13 +7,17 @@ package com.mjdsoftware.logbook.exception;
  */
 public enum ErrorCode {
 
-    // Generic error if no specific error code matches
+    // Unknown errors
     UNKNOWN_ERROR,
     RUNTIME,
+
     // Standard Java exceptions
     ILLEGAL_ARGUMENT,
     ILLEGAL_STATE,
     NULL_POINTER,
-    ACCESS_DENIED
+    ACCESS_DENIED,
+
+    //Application specific exceptions
+    LOGBOOK_NOT_FOUND
 
 }
