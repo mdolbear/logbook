@@ -8,6 +8,7 @@ import com.mjdsoftware.logbook.service.OauthAccessService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Tag(name="OauthAccessController",
+     description="This REST controller provides an interface for managing users within" +
+        " Keycloak, as well as getting client JWT tokens and refresh tokens.")
 @Slf4j
 @RestController
 @RequestMapping("/api/oauth")
@@ -56,7 +60,7 @@ public class OauthAccessController {
             @ApiResponse(responseCode = "400",
                     description = "General client error"),
             @ApiResponse(responseCode = "500",
-                    description = "General server error (check the server's logs for more info)")
+                    description = "General server error")
     })
     @PostMapping("/clientToken")
     public ResponseEntity<OauthToken> getClientToken(@RequestParam String username,
@@ -137,7 +141,7 @@ public class OauthAccessController {
             @ApiResponse(responseCode = "400",
                     description = "General client error"),
             @ApiResponse(responseCode = "500",
-                    description = "General server error (check the server's logs for more info)")
+                    description = "General server error")
     })
     @PreAuthorize("hasAuthority('ROLE_app_admin')")
     @PostMapping("/user")
@@ -164,7 +168,7 @@ public class OauthAccessController {
             @ApiResponse(responseCode = "400",
                     description = "General client error"),
             @ApiResponse(responseCode = "500",
-                    description = "General server error (check the server's logs for more info)")
+                    description = "General server error")
     })
     @PreAuthorize("hasAuthority('ROLE_app_admin')")
     @DeleteMapping("/user")

@@ -11,6 +11,10 @@ import com.mjdsoftware.logbook.security.MethodSecurityService;
 import com.mjdsoftware.logbook.service.ActivityService;
 import com.mjdsoftware.logbook.service.LogbookEntryService;
 import com.mjdsoftware.logbook.service.LogbookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -32,6 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Tag(name="LogbookController", description="This REST controller provides an interface for managing" +
+        " a logbook.")
 @Slf4j
 @RestController
 @RequestMapping("/api/")
@@ -80,8 +86,19 @@ public class LogbookController {
      * Answer all logbooks
      * @return ResponseEntity
      */
+    @Operation(summary = "Find all logbooks",
+            description = "Answers all logbooks in the system. This is a privileged operation" +
+                    " that takes admin level privileges.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
     @GetMapping("logbooks")
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @PreAuthorize("hasAuthority('ROLE_app_admin')")
     public ResponseEntity<List<LogbookDTO>> findAllLogbooks(Authentication authentication,
                                                             HttpServletRequest servletRequest,
                                                             @AuthenticationPrincipal Jwt token) {
@@ -96,12 +113,23 @@ public class LogbookController {
     }
 
     /**
-     * Find logbook by aName
+     * Find logbook by name
      * @param name String
      * @return ResponseEntity
      */
+    @Operation(summary = "Find logbook by its unique name",
+            description = "Answers all logbooks in the system. This is a privileged operation" +
+                    " that takes admin level privileges.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
+    @PreAuthorize("hasAuthority('ROLE_app_admin')")
     @GetMapping("logbook/{name}")
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
     public ResponseEntity<LogbookDTO> findLogbookByName(Authentication authentication,
                                                         HttpServletRequest servletRequest,
                                                         @AuthenticationPrincipal Jwt token,
@@ -122,6 +150,16 @@ public class LogbookController {
      * @param aLogbookVO LogbookDTO
      * @return ResponseEntity
      */
+    @Operation(summary = "Creates a logbook",
+            description = "Creates a logbook.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
     @PostMapping("/logbook")
     @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
     public ResponseEntity<LogbookDTO> createLogbook(Authentication authentication,
@@ -176,6 +214,16 @@ public class LogbookController {
      * @param aLogbookEntryVO LogbookEntryVO
      * @return ResponseEntity
      */
+    @Operation(summary = "Creates a logbook entry for a logbook",
+            description = "Creates a logbook entry for a logbook")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
     @PostMapping("logbook/{logbookId}/entry")
     @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
     public ResponseEntity<LogbookEntryDTO> createLogbookEntry(Authentication authentication,
@@ -231,6 +279,16 @@ public class LogbookController {
      * @param aLogbookEntryVO LogbookEntryVO
      * @return ResponseEntity
      */
+    @Operation(summary = "Modify a logbook entry for a logbook",
+            description = "Modify a logbook entry for a logbook")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
     @PutMapping("logbook/{logbookId}/entry")
     @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
     public ResponseEntity<LogbookEntryDTO> modifyLogbookEntry(Authentication authentication,
@@ -267,6 +325,16 @@ public class LogbookController {
      * Delete logbook entry for id
      * @param logbookEntryId Long
      */
+    @Operation(summary = "Delete a logbook entry for a logbook",
+            description = "Delete a logbook entry for a logbook")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
     @DeleteMapping("logbook/entry/{logbookEntryId}")
     @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
     public void deleteLogbookEntry(Authentication authentication,
@@ -287,6 +355,17 @@ public class LogbookController {
      * @param pageSize int
      * @return ResponseEntity
      */
+    @Operation(summary = "Find all logbook entries for a logbook",
+            description = "Find all logbook entries for a logbook. Note that this method will bring back" +
+                    " all logbook entries, including their comments.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
     @GetMapping("logbook/{logbookId}/entries/{pageNumber}/{pageSize}")
     @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
     public ResponseEntity<List<LogbookEntryDTO>> findLogbookEntries(Authentication authentication,
@@ -321,6 +400,17 @@ public class LogbookController {
      * @param pageSize int
      * @return ResponseEntity
      */
+    @Operation(summary = "Find all logbook entries for a logbook.",
+            description = "Find all logbook entries for a logbook. Note that this method will only bring back" +
+                    " shallow copies of logbook entries, leaving out their comments. Its a paged interface.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
     @GetMapping("logbook/{logbookId}/all-entries/{pageNumber}/{pageSize}")
     @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
     public ResponseEntity<List<LogbookEntryDTO>> findAllLogbookEntries(Authentication authentication,
@@ -367,6 +457,16 @@ public class LogbookController {
      * @param anActivityDTO ActivityDTO
      * @return ResponseEntity
      */
+    @Operation(summary = "Creates a activity for a logbook entry",
+            description = "Creates a activity for a logbook entry")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
     @PostMapping("logbook/{logbookId}/entry/{logbookEntryId}/activity")
     @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
     public ResponseEntity<ActivityDTO> createLActivity(Authentication authentication,
@@ -414,6 +514,16 @@ public class LogbookController {
      * @param anActivityDTO ActivityDTO
      * @return ResponseEntity
      */
+    @Operation(summary = "Modifies a activity for a logbook entry",
+            description = "Modifies a activity for a logbook entry")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
     @PutMapping("logbook/{logbookId}/entry/{logbookEntryId}/activity")
     @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
     public ResponseEntity<ActivityDTO> modifyActivity(Authentication authentication,
@@ -455,11 +565,21 @@ public class LogbookController {
 
 
     /**
-     * Create an activity
+     * Find all activities for a logbook entry
      * @param logbookId Long
      * @param logbookEntryId Long
      * @return ResponseEntity
      */
+    @Operation(summary = "Find all activities for a logbook entry",
+            description = "Find all activities for a logbook entry.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
     @GetMapping("logbook/{logbookId}/entry/{logbookEntryId}/activities")
     @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
     public ResponseEntity<List<ActivityDTO>> findAllActivitiesForEntry(Authentication authentication,
@@ -536,6 +656,17 @@ public class LogbookController {
      * @param logbookId Long
      * @return ResponseEntity
      */
+    @Operation(summary = "Find all logbook entries for a logbook",
+            description = "Find all logbook entries for a logbook. Note that this method will only bring back" +
+                    " shallow copies of logbook entries, leaving out their comments.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
     @GetMapping("logbook/{logbookId}/entries")
     @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
     public ResponseEntity<List<LogbookEntryDTO>> findLogbookEntries(Authentication authentication,
@@ -564,6 +695,16 @@ public class LogbookController {
      * @param logbookId Long
      * @return ResponseEntity
      */
+    @Operation(summary = "Get count of logbook entries for a logbook",
+            description = "Get count of logbook entries for a logbook.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
     @GetMapping("logbook/{logbookId}/entriesCount")
     @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
     public ResponseEntity<Long> findLogbookEntriesCount(Authentication authentication,

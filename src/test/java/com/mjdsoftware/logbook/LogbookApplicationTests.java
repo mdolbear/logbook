@@ -56,6 +56,7 @@ public class LogbookApplicationTests {
 	 * Find all logbooks test
 	 */
 	@Test
+	@WithMockUser(authorities = "ROLE_app_admin")
 	public void findAllLogbooks() {
 
 		ResponseEntity<List<LogbookDTO>> tempLogbooks;
@@ -76,6 +77,7 @@ public class LogbookApplicationTests {
 	 * Create logbook test
 	 */
 	@Test
+	@WithMockUser(authorities = "ROLE_app_admin")
 	public void createLogbook() {
 
 		LogbookDTO tempLogbook = basicCreateLogbook();
@@ -558,9 +560,12 @@ public class LogbookApplicationTests {
 	 */
 	private Jwt createJwtToken() {
 
+		String[] tempRoles = {"app_admin"};
+
 		Jwt jwt = Jwt.withTokenValue("token")
 				.header("alg", "none")
 				.claim("scope", "message:read")
+				.claim("role", tempRoles)
 				.claim("preferred_username", "athelete")
 				.build();
 

@@ -83,10 +83,14 @@ only way you can get to it is by doing a port-forward. For example on logbook, d
 8. Added role based authentication to the OauthAccessController. Now you need to be in a realm role (from keycloak) of ROLE_app_admin to access keycloak users, as well as 
 create and delete them. This will be used again later when I add multi-tenancy.
 
+9. To connect to the logbook database:
+```
+kubectl port-forward postgresql-0 5432:5432
+Create a connection to localhost:5432 using pgadmin or your favorite db tool. 
+You should now be able to connect to the database running inside of Kubernetes.
+```
 
-9. Project next steps:
-
-    -Api doc via open api
+10. Project next steps:
 
     -Multi-tenancy -> Add user object
     
