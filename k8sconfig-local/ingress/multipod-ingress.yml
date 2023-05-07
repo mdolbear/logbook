@@ -4,6 +4,7 @@ metadata:
   name: translator-ingress
   annotations:
     nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
 spec:
   ingressClassName: nginx
   rules:
