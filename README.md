@@ -100,3 +100,6 @@ You should now be able to connect to the database running inside of Kubernetes.
 
     -Statistics
 
+    -Helm chart(s) for everything
+
+

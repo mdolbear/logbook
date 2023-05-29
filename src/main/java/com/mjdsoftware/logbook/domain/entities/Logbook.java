@@ -9,7 +9,7 @@ import java.util.Calendar;
 @Entity
 @Table(name = "logbooks")
 @NoArgsConstructor
-@ToString()
+@ToString(exclude="user")
 @EqualsAndHashCode
 public class Logbook {
 
@@ -33,6 +33,12 @@ public class Logbook {
     @Column(name="version")
     @Getter @Setter(AccessLevel.PRIVATE)
     private long version;
+
+    @Getter @Setter(AccessLevel.PROTECTED)
+    @ManyToOne
+    @JoinColumn(name="user_id",
+            referencedColumnName = "id")
+    private User user;
 
     /**
      * Save create date/time on pre-persist callback

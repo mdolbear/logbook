@@ -58,6 +58,28 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
      * @param aRequest WebRequest
      * @return RequestEntity
      */
+    @ExceptionHandler(value = {UserAlreadyExistsException.class})
+    public ResponseEntity<Object> handleUserAlreadyExistsException(UserAlreadyExistsException anException,
+                                                                   WebRequest aRequest) {
+
+        Object[] tempArgs = {anException.getUsername()};
+
+        String tempMsg =
+                this.getLocalizedMessageForExceptions(ERROR_CODE_PREFIX
+                        + ErrorCode.USER_ALREADY_EXISTS.name(), tempArgs);
+        getLogger().error("User already exists error: " + tempMsg, anException);
+
+        return this.handleError(anException, aRequest, HttpStatus.BAD_REQUEST, tempMsg);
+
+    }
+
+
+    /**
+     * Handle internal errors
+     * @param anException Exception
+     * @param aRequest WebRequest
+     * @return RequestEntity
+     */
     @ExceptionHandler(value = {AccessDeniedException.class})
     public ResponseEntity<Object> handleAccessDenied(AccessDeniedException anException,
                                                       WebRequest aRequest) {
@@ -65,7 +87,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         String tempMsg =
                 this.getLocalizedMessageForExceptions(ERROR_CODE_PREFIX
                                                       + ErrorCode.ACCESS_DENIED.name());
-        getLogger().error("Internal error: " + tempMsg, anException);
+        getLogger().error("Access denied error: " + tempMsg, anException);
 
         return this.handleError(anException, aRequest, HttpStatus.FORBIDDEN, tempMsg);
 

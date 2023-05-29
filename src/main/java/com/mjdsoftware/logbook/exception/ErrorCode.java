@@ -18,6 +18,7 @@ public enum ErrorCode {
     ACCESS_DENIED,
 
     //Application specific exceptions
-    LOGBOOK_NOT_FOUND
+    LOGBOOK_NOT_FOUND,
+    USER_ALREADY_EXISTS
 
 }

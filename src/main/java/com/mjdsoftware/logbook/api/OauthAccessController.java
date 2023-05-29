@@ -31,16 +31,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/oauth")
 public class OauthAccessController {
 
-    @Autowired
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PROTECTED)
     private OauthAccessService oauthAccessService;
 
     /**
-     * Answer a default instance
+     * Answer an nstance for the following parameters:
+     * @param anOauthAccessService OauthAccessService
      */
-    public OauthAccessController() {
+    @Autowired
+    public OauthAccessController(OauthAccessService anOauthAccessService) {
 
         super();
+        this.setOauthAccessService(anOauthAccessService);
     }
 
     /**

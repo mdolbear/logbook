@@ -16,6 +16,18 @@ CREATE TABLE IF NOT EXISTS logbooks (
 
 ALTER TABLE logbooks ADD CONSTRAINT logbooks_name_unique UNIQUE (name);
 
+CREATE TABLE IF NOT EXISTS users (
+    id bigserial NOT NULL,
+    version bigint NOT NULL,
+    user_name varchar(256),
+    CONSTRAINT users_pkey PRIMARY KEY (id)
+);
+
+ALTER TABLE users ADD CONSTRAINT users_username_unique UNIQUE (user_name);
+ALTER TABLE logbooks ADD COLUMN IF NOT EXISTS user_id bigint;
+alter table logbooks add constraint logbooks_to_user_fk FOREIGN KEY (user_id) REFERENCES users (id)
+    ON DELETE NO ACTION;
+
 CREATE TABLE IF NOT EXISTS logbook_entries
 (
     id bigserial NOT NULL,
