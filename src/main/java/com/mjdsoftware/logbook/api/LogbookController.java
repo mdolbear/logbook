@@ -144,6 +144,32 @@ public class LogbookController {
 
     }
 
+    /**
+     * Delete logbook by id
+     * @param id Long
+     * @return ResponseEntity
+     */
+    @Operation(summary = "Delete logbook for id",
+            description = "Delete logbook by id.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @DeleteMapping("logbook/{id}")
+    public void deleteLogbook(Authentication authentication,
+                              HttpServletRequest servletRequest,
+                              @AuthenticationPrincipal Jwt token,
+                              @PathVariable Long id) {
+
+        this.getLogbookService().deleteLogbook(id);
+
+    }
+
 
     /**
      * Create a logbook
@@ -160,11 +186,12 @@ public class LogbookController {
             @ApiResponse(responseCode = "500",
                     description = "General server error")
     })
-    @PostMapping("/logbook")
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @PostMapping("user/{userId}/logbook")
+    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token, #userId)")
     public ResponseEntity<LogbookDTO> createLogbook(Authentication authentication,
                                                     HttpServletRequest servletRequest,
                                                     @AuthenticationPrincipal Jwt token,
+                                                    @PathVariable Long userId,
                                                     @Valid @RequestBody LogbookDTO aLogbookVO) {
 
         Logbook tempResult;

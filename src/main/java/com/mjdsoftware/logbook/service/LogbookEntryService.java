@@ -40,6 +40,13 @@ public interface LogbookEntryService {
     public void deleteLogbookEntry(Long anId);
 
     /**
+     * Delete all logbook entries for aLogbookId
+     * @param aLogbookId Long
+     */
+    public void deleteAllLogbookEntries(@NonNull Long aLogbookId);
+
+
+    /**
      * Modify logbook entry from aLogbookEntryDTO
      * @param aLogbook Logbook
      * @param aLogbookEntryDTO

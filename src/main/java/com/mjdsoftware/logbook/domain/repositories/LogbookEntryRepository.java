@@ -5,6 +5,7 @@ import com.mjdsoftware.logbook.domain.entities.LogbookEntry;
 import com.mjdsoftware.logbook.dto.LogbookEntryDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -49,5 +50,9 @@ public interface LogbookEntryRepository extends JpaRepository<LogbookEntry, Long
      */
     @Query(value="select count(*) FROM logbook_entries WHERE logbook_id = ?1", nativeQuery=true)
     public Long getCountByLogbookId(Long aLogbookId);
+
+    @Modifying
+    @Query("delete from LogbookEntry  ent  where ent.logbook.id = :id")
+    public void deleteAllByLogbookId(@Param("id") Long id);
 
 }

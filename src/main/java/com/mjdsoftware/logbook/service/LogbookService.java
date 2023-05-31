@@ -35,5 +35,10 @@ public interface LogbookService {
      */
     public Logbook findLogbookById(Long anId);
 
+    /**
+     * Delete logbook for aLogbookId
+     * @param aLogbookId Long
+     */
+    public void deleteLogbook(@NonNull Long aLogbookId);
 
 }

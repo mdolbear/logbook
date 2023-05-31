@@ -1,5 +1,7 @@
 package com.mjdsoftware.logbook.security;
 
+import com.mjdsoftware.logbook.domain.entities.User;
+import com.mjdsoftware.logbook.service.UserService;
 import com.mjdsoftware.logbook.utils.KeyCloakUtilities;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class MethodSecurityService {
 
+    public static final String ROLE_APP_ADMIN = "ROLE_app_admin";
     @Autowired
     @Setter(AccessLevel.PRIVATE)
     private MessageSource messageSource;
@@ -25,6 +28,9 @@ public class MethodSecurityService {
     @Autowired
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private KeyCloakUtilities keycloakUtilities;
+
+    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
+    private UserService userService;
 
     //Constants
     protected static final String USER_NAME = "preferred_username";
@@ -68,6 +74,63 @@ public class MethodSecurityService {
                 this.isNotAnonymousAndHasUserClaim(anAuthentication,
                                                    aRequest,
                                                    aJwt);
+    }
+
+    /**
+     * Allow access if either admin user or if userId is the same as the accessing
+     * user.
+     * @param anAuthentication Authentication
+     * @param aRequest HttpServletRequest
+     * @param aJwt Jwt
+     * @param userId Long
+     * @return boolean
+     */
+    public boolean isAccessAllowed(Authentication anAuthentication,
+                                   HttpServletRequest aRequest,
+                                   Jwt aJwt,
+                                   Long userId) {
+
+        boolean tempResult;
+        User    tempUser;
+        boolean tempIsAdminUser;
+
+        tempResult =
+                this.isNotAnonymousAndHasUserClaim(anAuthentication,
+                                                   aRequest,
+                                                    aJwt);
+        if (tempResult) {
+
+            tempIsAdminUser = anAuthentication.getAuthorities()
+                                              .stream()
+                                              .filter(ga->ga.getAuthority().equals(ROLE_APP_ADMIN))
+                                              .findFirst()
+                                              .isPresent();
+            if (!tempIsAdminUser) {
+
+                tempUser = this.getUserService().findUserById(userId);
+                tempResult = tempUser != null &&
+                                this.isUserSameAsClaimUser(tempUser, aJwt);
+
+            }
+            else {
+                tempResult = true; //Admin always has access
+            }
+
+        }
+
+        return tempResult;
+
+    }
+
+    /**
+     * Answer whether aUser is the same as the claim user
+     * @param aUser User
+     * @param aJwt Jwt
+     */
+    private boolean isUserSameAsClaimUser(User aUser, Jwt aJwt) {
+
+       return aUser.getUsername().equals(aJwt.getClaim(USER_NAME));
+
     }
 
     /**

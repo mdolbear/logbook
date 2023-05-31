@@ -1,9 +1,11 @@
 package com.mjdsoftware.logbook.api;
 
+import com.mjdsoftware.logbook.domain.entities.Logbook;
 import com.mjdsoftware.logbook.domain.entities.User;
 import com.mjdsoftware.logbook.dto.UserDTO;
 import com.mjdsoftware.logbook.dto.oauth.UserAuthDTO;
 import com.mjdsoftware.logbook.exception.UserAlreadyExistsException;
+import com.mjdsoftware.logbook.service.LogbookService;
 import com.mjdsoftware.logbook.service.OauthAccessService;
 import com.mjdsoftware.logbook.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +39,9 @@ public class UserController {
 
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PROTECTED)
     private OauthAccessService oauthAccessService;
+
+    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
+    private LogbookService logbookService;
 
     /**
      * Answer my logger
@@ -235,14 +240,28 @@ public class UserController {
         tempUser = this.getUserService().findUserById(id);
         if (tempUser != null) {
 
+            this.deleteLogbooksForUser(tempUser);
             this.deleteKeyCloakUsers(tempUser);
-
             this.getUserService().deleteUserById(id);
 
-            //TODO - Add deletes for corresponding Logbook, LogbookEntries, etc here
         }
 
     }
+
+    /**
+     * Delete logbooks for aUser
+     * @param aUser User
+     */
+    private void deleteLogbooksForUser(User aUser) {
+
+        for (Logbook aLogbook: aUser.getLogbooks()) {
+
+            this.getLogbookService().deleteLogbook(aLogbook.getId());
+
+        }
+
+    }
+
 
     /**
      * Delete all keycloak users that correspond to aUser

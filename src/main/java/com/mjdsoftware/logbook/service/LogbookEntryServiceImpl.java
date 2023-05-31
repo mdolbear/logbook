@@ -190,6 +190,17 @@ public class LogbookEntryServiceImpl extends AbstractServiceImpl implements Logb
 
     }
 
+    /**
+     * Delete all logbook entries for aLogbookId
+     * @param aLogbookId Long
+     */
+    @Transactional
+    @Override
+    public void deleteAllLogbookEntries(@NonNull Long aLogbookId) {
+
+        this.getLogbookEntryRepository().deleteAllByLogbookId(aLogbookId);
+    }
+
 
 
     /**
