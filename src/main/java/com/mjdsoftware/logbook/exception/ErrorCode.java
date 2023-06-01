@@ -19,6 +19,7 @@ public enum ErrorCode {
 
     //Application specific exceptions
     LOGBOOK_NOT_FOUND,
-    USER_ALREADY_EXISTS
+    USER_ALREADY_EXISTS,
+    USER_NOT_FOUND
 
 }

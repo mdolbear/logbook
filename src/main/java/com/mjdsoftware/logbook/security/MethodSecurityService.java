@@ -1,6 +1,8 @@
 package com.mjdsoftware.logbook.security;
 
+import com.mjdsoftware.logbook.domain.entities.Logbook;
 import com.mjdsoftware.logbook.domain.entities.User;
+import com.mjdsoftware.logbook.service.LogbookService;
 import com.mjdsoftware.logbook.service.UserService;
 import com.mjdsoftware.logbook.utils.KeyCloakUtilities;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +34,9 @@ public class MethodSecurityService {
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private UserService userService;
 
+    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
+    private LogbookService logbookService;
+
     //Constants
     protected static final String USER_NAME = "preferred_username";
 
@@ -50,10 +55,14 @@ public class MethodSecurityService {
      */
     @Autowired
     public MethodSecurityService(MessageSource aMessageSource,
-                                 KeyCloakUtilities aUtilities) {
+                                 KeyCloakUtilities aUtilities,
+                                 UserService userService,
+                                 LogbookService aLogbookService) {
 
         this.setMessageSource(aMessageSource);
         this.setKeycloakUtilities(aUtilities);
+        this.setUserService(userService);
+        this.setLogbookService(aLogbookService);
 
     }
 
@@ -74,6 +83,49 @@ public class MethodSecurityService {
                 this.isNotAnonymousAndHasUserClaim(anAuthentication,
                                                    aRequest,
                                                    aJwt);
+    }
+
+    /**
+     * Check for logbook access. Don't like double query TODO
+     * @param anAuthentication Authentication
+     * @param aRequest HttpServletRequest
+     * @param aJwt Jwt
+     * @param logbookId Long
+     * @return boolean
+     */
+    public boolean isAccessAllowedForLogbook(Authentication anAuthentication,
+                                             HttpServletRequest aRequest,
+                                             Jwt aJwt,
+                                             Long logbookId) {
+
+        boolean tempResult;
+        boolean tempIsAdminUser;
+        Logbook tempLogbook;
+
+        tempResult =
+                this.isNotAnonymousAndHasUserClaim(anAuthentication,
+                                                   aRequest,
+                                                   aJwt);
+        if (tempResult) {
+
+            tempIsAdminUser = anAuthentication.getAuthorities()
+                                              .stream()
+                                              .filter(ga -> ga.getAuthority().equals(ROLE_APP_ADMIN))
+                                              .findFirst()
+                                              .isPresent();
+            if (!tempIsAdminUser) {
+
+                //If not admin, then the logbook needs to belong to the user taking the action
+                tempLogbook = this.getLogbookService().findLogbookById(logbookId);
+                tempResult = tempLogbook != null &&
+                                    tempLogbook.getUser() != null &&
+                                        tempLogbook.getUser().getUsername().equals(aJwt.getClaim(USER_NAME));
+            }
+
+        }
+
+        return tempResult;
+
     }
 
     /**

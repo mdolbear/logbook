@@ -58,6 +58,27 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
      * @param aRequest WebRequest
      * @return RequestEntity
      */
+    @ExceptionHandler(value = {UserNotFoundException.class})
+    public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException anException,
+                                                              WebRequest aRequest) {
+
+
+        String tempMsg =
+                this.getLocalizedMessageForExceptions(ERROR_CODE_PREFIX
+                        + ErrorCode.USER_NOT_FOUND.name());
+        getLogger().error("User not found error: " + tempMsg, anException);
+
+        return this.handleError(anException, aRequest, HttpStatus.NOT_FOUND, tempMsg);
+
+    }
+
+
+    /**
+     * Handle internal errors
+     * @param anException Exception
+     * @param aRequest WebRequest
+     * @return RequestEntity
+     */
     @ExceptionHandler(value = {UserAlreadyExistsException.class})
     public ResponseEntity<Object> handleUserAlreadyExistsException(UserAlreadyExistsException anException,
                                                                    WebRequest aRequest) {

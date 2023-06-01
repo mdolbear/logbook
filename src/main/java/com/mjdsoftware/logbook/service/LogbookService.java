@@ -1,6 +1,7 @@
 package com.mjdsoftware.logbook.service;
 
 import com.mjdsoftware.logbook.domain.entities.Logbook;
+import com.mjdsoftware.logbook.domain.entities.User;
 import com.mjdsoftware.logbook.dto.LogbookDTO;
 import lombok.NonNull;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +18,12 @@ public interface LogbookService {
 
     /**
      * Create logbook
+     * @param aUser User
      * @param aVO LogbookDTO
+     * @return Logbook
      */
-    public Logbook createLogbook(LogbookDTO aVO);
+    public Logbook createLogbook(User aUser,
+                                 LogbookDTO aVO);
 
     /**
      * Find logbook by name

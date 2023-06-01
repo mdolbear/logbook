@@ -3,14 +3,15 @@ package com.mjdsoftware.logbook.domain.entities;
 import com.mjdsoftware.logbook.dto.LogbookDTO;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 @Entity
 @Table(name = "logbooks")
 @NoArgsConstructor
 @ToString(exclude="user")
-@EqualsAndHashCode
 public class Logbook {
 
     @Id
@@ -34,7 +35,7 @@ public class Logbook {
     @Getter @Setter(AccessLevel.PRIVATE)
     private long version;
 
-    @Getter @Setter(AccessLevel.PROTECTED)
+    @Getter @Setter
     @ManyToOne
     @JoinColumn(name="user_id",
             referencedColumnName = "id")
@@ -78,5 +79,27 @@ public class Logbook {
 
     //This may be the best site for statistical methods, even though
     //we don't have direct access to the underlying LogEntry objects
+
+    /**
+     * Default implementation from @EqualsAndHashCode conversion
+     * @param o Object
+     * @return boolean
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Logbook logbook = (Logbook) o;
+        return getId() != null && Objects.equals(getId(), logbook.getId());
+    }
+
+    /**
+     * Default implementation from @EqualsAndHashCode conversion
+     * @return int
+     */
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 
 }

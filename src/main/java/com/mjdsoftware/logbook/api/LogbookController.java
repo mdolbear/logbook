@@ -3,14 +3,16 @@ package com.mjdsoftware.logbook.api;
 import com.mjdsoftware.logbook.domain.entities.Activity;
 import com.mjdsoftware.logbook.domain.entities.Logbook;
 import com.mjdsoftware.logbook.domain.entities.LogbookEntry;
+import com.mjdsoftware.logbook.domain.entities.User;
 import com.mjdsoftware.logbook.dto.ActivityDTO;
 import com.mjdsoftware.logbook.dto.LogbookDTO;
 import com.mjdsoftware.logbook.dto.LogbookEntryDTO;
 import com.mjdsoftware.logbook.exception.LogbookNotFoundException;
-import com.mjdsoftware.logbook.security.MethodSecurityService;
+import com.mjdsoftware.logbook.exception.UserNotFoundException;
 import com.mjdsoftware.logbook.service.ActivityService;
 import com.mjdsoftware.logbook.service.LogbookEntryService;
 import com.mjdsoftware.logbook.service.LogbookService;
+import com.mjdsoftware.logbook.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -31,7 +33,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,6 +53,9 @@ public class LogbookController {
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private ActivityService activityService;
 
+    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
+    private UserService userService;
+
 
     /**
      * Answer my logger
@@ -67,17 +71,20 @@ public class LogbookController {
      * Answer an instance with muy dependencies
      * @param aLogbookService LogbookService
      * @param aLogbookEntryService LogbookEntryService
-     * @param activityService ActivityService
+     * @param anActivityService ActivityService
+     * @param aUserService UserService
      */
     @Autowired
     public LogbookController(LogbookService aLogbookService,
                              LogbookEntryService aLogbookEntryService,
-                             ActivityService activityService) {
+                             ActivityService anActivityService,
+                             UserService aUserService) {
 
         super();
         this.setLogbookService(aLogbookService);
         this.setLogbookEntryService(aLogbookEntryService);
-        this.setActivityService(activityService);
+        this.setActivityService(anActivityService);
+        this.setUserService(aUserService);
 
     }
 
@@ -159,7 +166,7 @@ public class LogbookController {
             @ApiResponse(responseCode = "500",
                     description = "General server error")
     })
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #id)")
     @DeleteMapping("logbook/{id}")
     public void deleteLogbook(Authentication authentication,
                               HttpServletRequest servletRequest,
@@ -194,12 +201,22 @@ public class LogbookController {
                                                     @PathVariable Long userId,
                                                     @Valid @RequestBody LogbookDTO aLogbookVO) {
 
-        Logbook tempResult;
+        Logbook tempResult = null;
+        User    tempUser;
 
-        tempResult = this.getLogbookService().createLogbook(aLogbookVO);
+        tempUser = this.getUserService().findUserById(userId);
+        if (tempUser != null) {
+
+            tempResult = this.getLogbookService().createLogbook(tempUser,
+                                                                aLogbookVO);
+        }
+        else {
+            throw new UserNotFoundException("User not found when creating logbook");
+        }
 
         return new ResponseEntity<>(this.asValueObject(tempResult),
                                     HttpStatus.OK);
+
     }
 
 
@@ -317,7 +334,7 @@ public class LogbookController {
                     description = "General server error")
     })
     @PutMapping("logbook/{logbookId}/entry")
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
     public ResponseEntity<LogbookEntryDTO> modifyLogbookEntry(Authentication authentication,
                                                               HttpServletRequest servletRequest,
                                                               @AuthenticationPrincipal Jwt token,
@@ -362,11 +379,12 @@ public class LogbookController {
             @ApiResponse(responseCode = "500",
                     description = "General server error")
     })
-    @DeleteMapping("logbook/entry/{logbookEntryId}")
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @DeleteMapping("logbook/{logbookId}/entry/{logbookEntryId}")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
     public void deleteLogbookEntry(Authentication authentication,
                                    HttpServletRequest servletRequest,
                                    @AuthenticationPrincipal Jwt token,
+                                   @PathVariable Long logbookId,
                                    Long logbookEntryId) {
 
         this.getLogbookEntryService().deleteLogbookEntry(logbookEntryId);
@@ -394,7 +412,7 @@ public class LogbookController {
                     description = "General server error")
     })
     @GetMapping("logbook/{logbookId}/entries/{pageNumber}/{pageSize}")
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
     public ResponseEntity<List<LogbookEntryDTO>> findLogbookEntries(Authentication authentication,
                                                                     HttpServletRequest servletRequest,
                                                                     @AuthenticationPrincipal Jwt token,
@@ -439,7 +457,7 @@ public class LogbookController {
                     description = "General server error")
     })
     @GetMapping("logbook/{logbookId}/all-entries/{pageNumber}/{pageSize}")
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
     public ResponseEntity<List<LogbookEntryDTO>> findAllLogbookEntries(Authentication authentication,
                                                                        HttpServletRequest servletRequest,
                                                                        @AuthenticationPrincipal Jwt token,
@@ -495,7 +513,7 @@ public class LogbookController {
                     description = "General server error")
     })
     @PostMapping("logbook/{logbookId}/entry/{logbookEntryId}/activity")
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
     public ResponseEntity<ActivityDTO> createLActivity(Authentication authentication,
                                                        HttpServletRequest servletRequest,
                                                        @AuthenticationPrincipal Jwt token,
@@ -552,7 +570,7 @@ public class LogbookController {
                     description = "General server error")
     })
     @PutMapping("logbook/{logbookId}/entry/{logbookEntryId}/activity")
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
     public ResponseEntity<ActivityDTO> modifyActivity(Authentication authentication,
                                                       HttpServletRequest servletRequest,
                                                       @AuthenticationPrincipal Jwt token,
@@ -608,7 +626,7 @@ public class LogbookController {
                     description = "General server error")
     })
     @GetMapping("logbook/{logbookId}/entry/{logbookEntryId}/activities")
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
     public ResponseEntity<List<ActivityDTO>> findAllActivitiesForEntry(Authentication authentication,
                                                                        HttpServletRequest servletRequest,
                                                                        @AuthenticationPrincipal Jwt token,
@@ -695,7 +713,7 @@ public class LogbookController {
                     description = "General server error")
     })
     @GetMapping("logbook/{logbookId}/entries")
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
     public ResponseEntity<List<LogbookEntryDTO>> findLogbookEntries(Authentication authentication,
                                                                     HttpServletRequest servletRequest,
                                                                     @AuthenticationPrincipal Jwt token,
@@ -733,7 +751,7 @@ public class LogbookController {
                     description = "General server error")
     })
     @GetMapping("logbook/{logbookId}/entriesCount")
-    @PreAuthorize("@methodSecurityService.isAccessAllowed(#authentication, #servletRequest, #token)")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
     public ResponseEntity<Long> findLogbookEntriesCount(Authentication authentication,
                                                         HttpServletRequest servletRequest,
                                                         @AuthenticationPrincipal Jwt token,

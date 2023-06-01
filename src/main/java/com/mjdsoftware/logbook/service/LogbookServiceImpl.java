@@ -1,6 +1,7 @@
 package com.mjdsoftware.logbook.service;
 
 import com.mjdsoftware.logbook.domain.entities.Logbook;
+import com.mjdsoftware.logbook.domain.entities.User;
 import com.mjdsoftware.logbook.domain.repositories.LogbookRepository;
 import com.mjdsoftware.logbook.dto.LogbookDTO;
 import lombok.AccessLevel;
@@ -26,6 +27,9 @@ public class LogbookServiceImpl implements LogbookService {
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private LogbookEntryService logbookEntryService;
 
+    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
+    private UserService userService;
+
     /**
      * Answer my logger
      * @return logger
@@ -36,15 +40,20 @@ public class LogbookServiceImpl implements LogbookService {
 
     /**
      * Answer an instance with dependencies
+     * @param aService LogbookEntryService
      * @param aLogbookRepository LogbookRepository
+     * @param aUserService UserService
      */
     @Autowired
     public LogbookServiceImpl(LogbookEntryService aService,
-                              LogbookRepository aLogbookRepository) {
+                              LogbookRepository aLogbookRepository,
+                              UserService aUserService) {
 
         super();
         this.setLogbookEntryService(aService);
         this.setLogbookRepository(aLogbookRepository);
+        this.setUserService(aUserService);
+
     }
 
     /**
@@ -82,16 +91,20 @@ public class LogbookServiceImpl implements LogbookService {
 
     /**
      * Create logbook
+     * @param aUser User
      * @param aVO LogbookDTO
+     * @return Logbook
      */
     @Override
     @Transactional
-    public Logbook createLogbook(@NonNull LogbookDTO aVO) {
+    public Logbook createLogbook(@NonNull User aUser,
+                                 @NonNull LogbookDTO aVO) {
 
         Logbook tempBook;
 
         tempBook = new Logbook();
         tempBook.updateFrom(aVO);
+        tempBook.setUser(aUser);
 
         this.getLogbookRepository().save(tempBook);
 

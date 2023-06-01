@@ -56,14 +56,18 @@ public class UserController {
      * Answer an instance of me on the following arguments
      * @param anOauthAccessService OauthAccessService
      * @param aUserService UserService
+     * @param aLogbookService LogbookService
      */
     @Autowired
     public UserController(OauthAccessService anOauthAccessService,
-                          UserService aUserService) {
+                          UserService aUserService,
+                          LogbookService aLogbookService) {
 
         super();
         this.setOauthAccessService(anOauthAccessService);
         this.setUserService(aUserService);
+        this.setLogbookService(aLogbookService);
+
     }
 
     /**

@@ -5,9 +5,7 @@ import com.mjdsoftware.logbook.api.UserController;
 import com.mjdsoftware.logbook.domain.entities.ActivityType;
 import com.mjdsoftware.logbook.domain.entities.DurationUnits;
 import com.mjdsoftware.logbook.dto.*;
-import com.mjdsoftware.logbook.dto.oauth.OauthToken;
 import com.mjdsoftware.logbook.dto.oauth.UserAuthDTO;
-import com.mjdsoftware.logbook.service.OauthAccessService;
 import com.mjdsoftware.logbook.service.OauthAccessServiceImpl;
 import com.mjdsoftware.logbook.utils.KeyCloakUtilities;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -293,6 +290,7 @@ public class LogbookApplicationTests {
 		this.getLogbookController().deleteLogbookEntry(this.getAuthentication(),
 													  this.getServletRequest(),
 													  this.createJwtToken(),
+													  tempLogbookDTO.getId(),
 													  tempEntryDTO.getId());
 
 		//Try to find them. We should not find any
@@ -345,6 +343,7 @@ public class LogbookApplicationTests {
 		this.getLogbookController().deleteLogbookEntry(this.getAuthentication(),
 														this.getServletRequest(),
 														this.createJwtToken(),
+														tempLogbookDTO.getId(),
 														tempEntryDTO.getId());
 
 		//Try to find them. We should not find any
@@ -503,6 +502,7 @@ public class LogbookApplicationTests {
 		this.getLogbookController().deleteLogbookEntry(this.getAuthentication(),
 													  this.getServletRequest(),
 													  this.createJwtToken(),
+													  tempLogbookDTO.getId(),
 													  tempEntryDTO.getId());
 
 		//Try to find them. We should not find any
@@ -629,6 +629,7 @@ public class LogbookApplicationTests {
 		this.getLogbookController().deleteLogbookEntry(this.getAuthentication(),
 													   this.getServletRequest(),
 													   this.createJwtToken(),
+													   tempLogbookDTO.getId(),
 													   tempEntryDTO.getId());
 
 		//Try to find them. We should not find any
