@@ -90,7 +90,23 @@ Create a connection to localhost:5432 using pgadmin or your favorite db tool.
 You should now be able to connect to the database running inside of Kubernetes.
 ```
 
-10. Project next steps:
+10. I've added multi-tenancy to the app. Therefore, you now need to create users. User creation can be done
+via the UserController REST service. 
+
+    
+    a. You need to create one administrative user in keycloak before doing anything else. This user needs to have the role of app_admin.
+
+![](docs/RoleMapping-app_admin.png)
+
+    b. Once this user has been created, you can user this user to log into the app, via the OauthAccessController with this new admin level user.
+       See the Swagger interface above.
+
+    c. Once connected as the admin user, you can now create users via the new implementation of UserController. From here its possible to
+       create a new user. A representation of this user is created in Keycloak and in the application's database as well. At this point,
+       you have the ability to create logbooks for the specific user, as well as other resources. Note that the admin user can do any of this
+       activity on behalf of another user. This has been implemented as part of the MethodSecurityService currently.
+
+11. Project next steps:
 
     -Experiment with MapStruct
 
