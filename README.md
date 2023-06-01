@@ -92,8 +92,6 @@ You should now be able to connect to the database running inside of Kubernetes.
 
 10. Project next steps:
 
-    -Multi-tenancy -> Add user object
-    
     -Experiment with MapStruct
 
     -Import facility (Look at imports from Concept2, etc) -> csv file formats, etc
