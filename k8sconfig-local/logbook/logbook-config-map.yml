@@ -7,6 +7,9 @@ data:
     logging:
       level:
         org.springframework: ERROR
+        org.hibernate.stat: DEBUG
+        org.hibernate.SQL: DEBUG
+        org.hibernate.cache: DEBUG
         com.mjdsoftware: DEBUG
     
     app:
@@ -115,12 +118,17 @@ data:
       jpa:
         properties:
           hibernate:
+            generate_statistics: true
             naming:
               implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
               physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
             jdbc:
               lob:
                 non_contextual_creation: true
+            session:
+              events:
+                log:
+                  LOG_QUERIES_SLOWER_THAN_MS: 1
       servlet:
         multipart:
           max-file-size: 800MB
