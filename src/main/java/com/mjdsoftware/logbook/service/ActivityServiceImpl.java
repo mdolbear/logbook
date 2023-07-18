@@ -1,11 +1,12 @@
 package com.mjdsoftware.logbook.service;
 
-import com.mjdsoftware.logbook.domain.entities.Activity;
-import com.mjdsoftware.logbook.domain.entities.Logbook;
-import com.mjdsoftware.logbook.domain.entities.LogbookEntry;
+import com.mjdsoftware.logbook.domain.entities.*;
 import com.mjdsoftware.logbook.domain.repositories.ActivityRepository;
 import com.mjdsoftware.logbook.domain.repositories.LogbookEntryRepository;
 import com.mjdsoftware.logbook.dto.ActivityDTO;
+import com.mjdsoftware.logbook.dto.MonitoredAerobicActivityDTO;
+import com.mjdsoftware.logbook.dto.StrengthTrainingActivityDTO;
+import com.mjdsoftware.logbook.dto.UnMonitoredAerobicActivityDTO;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -73,12 +74,38 @@ public class ActivityServiceImpl extends AbstractServiceImpl implements Activity
         this.validate(aLogbook, anEntry);
 
         //Create and save activity
-        tempActivity = new Activity();
+        tempActivity = this.createActivityBasedOn(anActivityDTO);
         tempActivity.updateFrom(anActivityDTO);
         anEntry.addActivity(tempActivity);
         this.getActivityRepository().save(tempActivity);
 
         return tempActivity;
+
+    }
+
+    /**
+     * Create activity based on dto type
+     * @param anActivityDTO ActivityDTO
+     * @return Activity
+     */
+    private Activity createActivityBasedOn(ActivityDTO anActivityDTO) {
+
+        Activity tempResult;
+
+        if (anActivityDTO instanceof StrengthTrainingActivityDTO) {
+            tempResult = new StrengthTrainingActivity();
+        }
+        else if (anActivityDTO instanceof UnMonitoredAerobicActivityDTO) {
+            tempResult = new UnMonitoredAerobicActivity();
+        }
+        else if (anActivityDTO instanceof MonitoredAerobicActivityDTO) {
+            tempResult = new MonitoredAerobicActivity();
+        }
+        else {
+            throw new IllegalArgumentException("Unrecognized activity type encountered");
+        }
+
+        return tempResult;
 
     }
 

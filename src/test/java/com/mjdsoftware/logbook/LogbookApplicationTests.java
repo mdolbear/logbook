@@ -3,6 +3,7 @@ package com.mjdsoftware.logbook;
 import com.mjdsoftware.logbook.api.LogbookController;
 import com.mjdsoftware.logbook.api.UserController;
 import com.mjdsoftware.logbook.domain.entities.ActivityType;
+import com.mjdsoftware.logbook.domain.entities.DistanceUnits;
 import com.mjdsoftware.logbook.domain.entities.DurationUnits;
 import com.mjdsoftware.logbook.dto.*;
 import com.mjdsoftware.logbook.dto.oauth.UserAuthDTO;
@@ -475,12 +476,12 @@ public class LogbookApplicationTests {
 		tempEntryDTO = this.basicCreateLogbookEntry(tempLogbookDTO);
 
 		//Create activity
-		tempActivityResult = this.getLogbookController().createLActivity(this.getAuthentication(),
-																		this.getServletRequest(),
-																		this.createJwtToken(),
-																		tempLogbookDTO.getId(),
-																		 tempEntryDTO.getId(),
-																		 this.createActivityDTO());
+		tempActivityResult = this.getLogbookController().createUnMonitoredAerobicActivity(this.getAuthentication(),
+																						  this.getServletRequest(),
+																						  this.createJwtToken(),
+																						  tempLogbookDTO.getId(),
+																		 				  tempEntryDTO.getId(),
+																		 				  this.createActivityDTO());
 
 		assertTrue(this.isCreateActivityResultValid(tempActivityResult),
 				"Create activity failed");
@@ -552,16 +553,18 @@ public class LogbookApplicationTests {
 	 * Create activity dto
 	 * @return ActivityDTO
 	 */
-	private ActivityDTO createActivityDTO() {
+	private UnMonitoredAerobicActivityDTO createActivityDTO() {
 
-		ActivityDTO tempActivity;
+		UnMonitoredAerobicActivityDTO tempActivity;
 
-		tempActivity = new ActivityDTO();
+		tempActivity = new UnMonitoredAerobicActivityDTO();
 
 		tempActivity.setActivityType(ActivityType.ROWING);
 		tempActivity.setActivityDetails("Steady state - Zone 2 - 232 pace");
 		tempActivity.setDuration(30.0d);
 		tempActivity.setDurationUnits(DurationUnits.MINUTES);
+		tempActivity.setDistance(10);
+		tempActivity.setDistanceUnits(DistanceUnits.KILOMETERS);
 
 		tempActivity.addComment(new CommentDTO(null,
 				"New Activity Comment 1",

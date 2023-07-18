@@ -12,10 +12,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="activity_discriminator",
+                     discriminatorType = DiscriminatorType.STRING)
 @Table(name = "activities")
 @ToString(exclude="logbookEntry")
 @EqualsAndHashCode
-public class Activity {
+public abstract class Activity {
 
     @Getter
     @Id
@@ -89,24 +92,7 @@ public class Activity {
      * Answer myself as value object
      * @return ActivityDTO
      */
-    public ActivityDTO asValueObject() {
-
-        List<CommentDTO> tempComments;
-
-        tempComments =
-                this.getComments().stream()
-                                  .map(co->co.asValueObject())
-                                  .collect(Collectors.toList());
-
-        return new ActivityDTO(this.getId(),
-                               this.getActivityType(),
-                               this.getDurationUnits(),
-                               this.getDuration(),
-                               this.getVersion(),
-                               this.getActivityDetails().getDetails(),
-                               tempComments);
-
-    }
+    public abstract ActivityDTO asValueObject();
 
     /**
      * Update from anActivityDTO

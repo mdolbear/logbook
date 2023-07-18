@@ -4,9 +4,7 @@ import com.mjdsoftware.logbook.domain.entities.Activity;
 import com.mjdsoftware.logbook.domain.entities.Logbook;
 import com.mjdsoftware.logbook.domain.entities.LogbookEntry;
 import com.mjdsoftware.logbook.domain.entities.User;
-import com.mjdsoftware.logbook.dto.ActivityDTO;
-import com.mjdsoftware.logbook.dto.LogbookDTO;
-import com.mjdsoftware.logbook.dto.LogbookEntryDTO;
+import com.mjdsoftware.logbook.dto.*;
 import com.mjdsoftware.logbook.exception.LogbookNotFoundException;
 import com.mjdsoftware.logbook.exception.UserNotFoundException;
 import com.mjdsoftware.logbook.service.ActivityService;
@@ -43,7 +41,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/")
 public class LogbookController {
-
+    
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private LogbookService logbookService;
 
@@ -55,6 +53,11 @@ public class LogbookController {
 
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private UserService userService;
+
+    //Constants
+    public static final String STRENGTH_TRAINING_ACTIVITY_NOT_FOUND_MESSAGE = "Strength training activity - Logbook or LogbookEntry were not found to create an activity";
+    public static final String UNMONITORED_AEROBIC_ACTIVITY_NOT_FOUND_MESSAGE = "UnMonitored aerobic activity - Logbook or LogbookEntry were not found to create an activity";
+    public static final String MONITORED_AEROBIC_ACTIVITY_NOT_FOUND_MESSAGE = "Monitored aerobic activity - Logbook or LogbookEntry were not found to create an activity";
 
 
     /**
@@ -495,15 +498,16 @@ public class LogbookController {
 
     }
 
+
     /**
-     * Create an activity
+     * Create a strength training activity
      * @param logbookId Long
      * @param logbookEntryId Long
      * @param anActivityDTO ActivityDTO
      * @return ResponseEntity
      */
-    @Operation(summary = "Creates a activity for a logbook entry",
-            description = "Creates a activity for a logbook entry")
+    @Operation(summary = "Creates a strength training activity for a logbook entry",
+               description = "Creates a strength training activity for a logbook entry")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Success"),
@@ -512,15 +516,34 @@ public class LogbookController {
             @ApiResponse(responseCode = "500",
                     description = "General server error")
     })
-    @PostMapping("logbook/{logbookId}/entry/{logbookEntryId}/activity")
+    @PostMapping("logbook/{logbookId}/entry/{logbookEntryId}/strengthTrainingActivity")
     @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
-    public ResponseEntity<ActivityDTO> createLActivity(Authentication authentication,
-                                                       HttpServletRequest servletRequest,
-                                                       @AuthenticationPrincipal Jwt token,
-                                                       @PathVariable Long logbookId,
-                                                       @PathVariable Long logbookEntryId,
-                                                       @Valid @RequestBody ActivityDTO anActivityDTO) {
+    public ResponseEntity<ActivityDTO>
+                    createStrengthTrainingActivity(Authentication authentication,
+                                                  HttpServletRequest servletRequest,
+                                                  @AuthenticationPrincipal Jwt token,
+                                                  @PathVariable Long logbookId,
+                                                  @PathVariable Long logbookEntryId,
+                                                  @Valid @RequestBody StrengthTrainingActivityDTO anActivityDTO) {
 
+        return this.basicCreateActivity(logbookId,
+                                        logbookEntryId,
+                                        anActivityDTO,
+                                        STRENGTH_TRAINING_ACTIVITY_NOT_FOUND_MESSAGE);
+
+    }
+
+    /**
+     * Create activity
+     * @param logbookId Long
+     * @param logbookEntryId Long
+     * @param anActivityDTO ActivityDTO
+     * @return ResponseEntity
+     */
+    private ResponseEntity<ActivityDTO> basicCreateActivity(Long logbookId,
+                                                            Long logbookEntryId,
+                                                            ActivityDTO anActivityDTO,
+                                                            String aNotFoundMessage) {
         Activity        tempResult = null;
         Logbook         tempLogbook = null;
         LogbookEntry    tempEntry = null;
@@ -543,14 +566,12 @@ public class LogbookController {
         if (tempLogbook == null ||
                 tempEntry == null) {
 
-            getLogger().info("Logbook or LogbookEntry were not found to create an activity");
+            getLogger().info(aNotFoundMessage);
         }
 
         return new ResponseEntity<>(this.asValueObject(tempResult),
                                     HttpStatus.OK);
-
     }
-
 
     /**
      * Create an activity
@@ -559,8 +580,8 @@ public class LogbookController {
      * @param anActivityDTO ActivityDTO
      * @return ResponseEntity
      */
-    @Operation(summary = "Modifies a activity for a logbook entry",
-            description = "Modifies a activity for a logbook entry")
+    @Operation(summary = "Creates a monitored aerobic activity for a logbook entry",
+               description = "Creates a monitored aerobic activity for a logbook entry")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Success"),
@@ -569,14 +590,171 @@ public class LogbookController {
             @ApiResponse(responseCode = "500",
                     description = "General server error")
     })
-    @PutMapping("logbook/{logbookId}/entry/{logbookEntryId}/activity")
+    @PostMapping("logbook/{logbookId}/entry/{logbookEntryId}/monitoredAerobicActivity")
     @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
-    public ResponseEntity<ActivityDTO> modifyActivity(Authentication authentication,
-                                                      HttpServletRequest servletRequest,
-                                                      @AuthenticationPrincipal Jwt token,
-                                                      @PathVariable Long logbookId,
-                                                      @PathVariable Long logbookEntryId,
-                                                      @Valid @RequestBody ActivityDTO anActivityDTO) {
+    public ResponseEntity<ActivityDTO>
+            createMonitoredAerobicActivity(Authentication authentication,
+                                           HttpServletRequest servletRequest,
+                                           @AuthenticationPrincipal Jwt token,
+                                           @PathVariable Long logbookId,
+                                           @PathVariable Long logbookEntryId,
+                                           @Valid @RequestBody MonitoredAerobicActivityDTO anActivityDTO) {
+
+        return this.basicCreateActivity(logbookId,
+                                        logbookEntryId,
+                                        anActivityDTO,
+                                        MONITORED_AEROBIC_ACTIVITY_NOT_FOUND_MESSAGE);
+
+    }
+
+    /**
+     * Create an activity
+     * @param logbookId Long
+     * @param logbookEntryId Long
+     * @param anActivityDTO ActivityDTO
+     * @return ResponseEntity
+     */
+    @Operation(summary = "Creates an unmonitored aerobic activity for a logbook entry",
+               description = "Creates an unmonitored aerobic activity for a logbook entry")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
+    @PostMapping("logbook/{logbookId}/entry/{logbookEntryId}/unmonitoredAerobicActivity")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
+    public ResponseEntity<ActivityDTO>
+                createUnMonitoredAerobicActivity(Authentication authentication,
+                                                 HttpServletRequest servletRequest,
+                                                 @AuthenticationPrincipal Jwt token,
+                                                 @PathVariable Long logbookId,
+                                                 @PathVariable Long logbookEntryId,
+                                                 @Valid @RequestBody UnMonitoredAerobicActivityDTO anActivityDTO) {
+
+        return this.basicCreateActivity(logbookId,
+                                        logbookEntryId,
+                                        anActivityDTO,
+                                        UNMONITORED_AEROBIC_ACTIVITY_NOT_FOUND_MESSAGE);
+
+    }
+
+    /**
+     * Modify an activity
+     * @param logbookId Long
+     * @param logbookEntryId Long
+     * @param anActivityDTO ActivityDTO
+     * @return ResponseEntity
+     */
+    @Operation(summary = "Modifies a strength training activity for a logbook entry",
+            description = "Modifies a strength training activity for a logbook entry")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
+    @PutMapping("logbook/{logbookId}/entry/{logbookEntryId}/strengthTrainingActivity")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
+    public ResponseEntity<ActivityDTO> modifyStrengthTrainingActivity(Authentication authentication,
+                                                                      HttpServletRequest servletRequest,
+                                                                      @AuthenticationPrincipal Jwt token,
+                                                                      @PathVariable Long logbookId,
+                                                                      @PathVariable Long logbookEntryId,
+                                                                      @Valid @RequestBody StrengthTrainingActivityDTO anActivityDTO) {
+
+        return this.basicModifyActivity(logbookId,
+                                        logbookEntryId,
+                                        anActivityDTO,
+                                        STRENGTH_TRAINING_ACTIVITY_NOT_FOUND_MESSAGE);
+
+    }
+
+
+
+
+    /**
+     * Modify an activity
+     * @param logbookId Long
+     * @param logbookEntryId Long
+     * @param anActivityDTO ActivityDTO
+     * @return ResponseEntity
+     */
+    @Operation(summary = "Modifies a monitored aerobic activity for a logbook entry",
+               description = "Modifies a monitored aerobic activity for a logbook entry")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
+    @PutMapping("logbook/{logbookId}/entry/{logbookEntryId}/monitoredAerobicActivity")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
+    public ResponseEntity<ActivityDTO> modifyMonitoredAerobicActivity(Authentication authentication,
+                                                                      HttpServletRequest servletRequest,
+                                                                      @AuthenticationPrincipal Jwt token,
+                                                                      @PathVariable Long logbookId,
+                                                                      @PathVariable Long logbookEntryId,
+                                                                      @Valid @RequestBody MonitoredAerobicActivityDTO anActivityDTO) {
+
+        return this.basicModifyActivity(logbookId,
+                                        logbookEntryId,
+                                        anActivityDTO,
+                                        MONITORED_AEROBIC_ACTIVITY_NOT_FOUND_MESSAGE);
+
+    }
+
+    /**
+     * Modify an activity
+     * @param logbookId Long
+     * @param logbookEntryId Long
+     * @param anActivityDTO ActivityDTO
+     * @return ResponseEntity
+     */
+    @Operation(summary = "Modifies an unmonitored aerobic activity for a logbook entry",
+            description = "Modifies an unmonitored aerobic activity for a logbook entry")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
+    @PutMapping("logbook/{logbookId}/entry/{logbookEntryId}/unmonitoredAerobicActivity")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
+    public ResponseEntity<ActivityDTO> modifyUnMonitoredAerobicActivity(Authentication authentication,
+                                                                        HttpServletRequest servletRequest,
+                                                                        @AuthenticationPrincipal Jwt token,
+                                                                        @PathVariable Long logbookId,
+                                                                        @PathVariable Long logbookEntryId,
+                                                                        @Valid @RequestBody UnMonitoredAerobicActivityDTO anActivityDTO) {
+
+        return this.basicModifyActivity(logbookId,
+                                        logbookEntryId,
+                                        anActivityDTO,
+                                        UNMONITORED_AEROBIC_ACTIVITY_NOT_FOUND_MESSAGE);
+
+    }
+
+    /**
+     * Modify activity
+     * @param logbookId Long
+     * @param logbookEntryId Long
+     * @param anActivityDTO ActivityDTO
+     * @param aNotFoundMessage String
+     * @return ResponseEntity
+     */
+    private ResponseEntity<ActivityDTO> basicModifyActivity(Long logbookId,
+                                                            Long logbookEntryId,
+                                                            ActivityDTO anActivityDTO,
+                                                            String aNotFoundMessage) {
 
         Activity        tempResult = null;
         Logbook         tempLogbook = null;
@@ -600,12 +778,11 @@ public class LogbookController {
         if (tempLogbook == null ||
                 tempEntry == null) {
 
-            getLogger().info("Logbook or LogbookEntry were not found to modify an activity");
+            getLogger().info(aNotFoundMessage);
         }
 
         return new ResponseEntity<>(this.asValueObject(tempResult),
                                     HttpStatus.OK);
-
     }
 
 

@@ -110,7 +110,7 @@ via the UserController REST service.
 
     -Experiment with MapStruct
 
-    -Import facility (Look at imports from Concept2, etc) -> csv file formats, etc
+    -Export facility - Will export data into csv format from the database over a date range
 
     -Statistics
 

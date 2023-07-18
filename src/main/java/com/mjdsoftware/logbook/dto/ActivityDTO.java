@@ -15,7 +15,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @AllArgsConstructor
-public class ActivityDTO {
+public abstract class ActivityDTO {
 
     private Long id;
 

@@ -1,9 +1,9 @@
 package com.mjdsoftware.logbook.domain.changemgmt;
 
-import com.mjdsoftware.logbook.domain.entities.Activity;
 import com.mjdsoftware.logbook.domain.entities.Comment;
-import com.mjdsoftware.logbook.dto.ActivityDTO;
+import com.mjdsoftware.logbook.domain.entities.StrengthTrainingActivity;
 import com.mjdsoftware.logbook.dto.CommentDTO;
+import com.mjdsoftware.logbook.dto.StrengthTrainingActivityDTO;
 import org.junit.jupiter.api.Test;
 
 import java.util.stream.Collectors;
@@ -21,8 +21,8 @@ public class ChangeManagementTest {
     @Test
     public void performChangeManagementTestRemovingOneKeepingExistingAndAddingNewObjects() {
 
-        ActivityDTO tempDTO = this.creatDTOObjects1();
-        Activity tempDomainObject = this.creatDomainObjects1();
+        StrengthTrainingActivityDTO tempDTO = this.creatDTOObjects1();
+        StrengthTrainingActivity tempDomainObject = this.creatDomainObjects1();
 
         tempDomainObject.applyChanges(tempDTO);
         assertTrue(this.hasExpectedComments1(tempDomainObject),
@@ -34,7 +34,7 @@ public class ChangeManagementTest {
      * @param anActivity Activity
      * @return
      */
-    public boolean hasExpectedComments1(Activity anActivity) {
+    public boolean hasExpectedComments1(StrengthTrainingActivity anActivity) {
 
         boolean tempCond1;
         boolean tempCond2;
@@ -80,11 +80,11 @@ public class ChangeManagementTest {
      * Create dto objects
      * @return ActivityDTO
      */
-    public ActivityDTO creatDTOObjects1() {
+    public StrengthTrainingActivityDTO creatDTOObjects1() {
 
-        ActivityDTO tempDTO;
+        StrengthTrainingActivityDTO tempDTO;
 
-        tempDTO = new ActivityDTO();
+        tempDTO = new StrengthTrainingActivityDTO();
         tempDTO.addComment(new CommentDTO(null,
                          "New Comment 1",
                                   0,
@@ -109,13 +109,13 @@ public class ChangeManagementTest {
 
     /**
      * Create domain objects
-     * @return Activity
+     * @return StrengthTrainingActivity
      */
-    public Activity creatDomainObjects1() {
+    public StrengthTrainingActivity creatDomainObjects1() {
 
-        Activity tempDomainObject;
+        StrengthTrainingActivity tempDomainObject;
 
-        tempDomainObject = new Activity();
+        tempDomainObject = new StrengthTrainingActivity();
 
         tempDomainObject.addComment(new Comment(Long.valueOf(2),
                 "Existing Comment 2",
@@ -143,8 +143,8 @@ public class ChangeManagementTest {
     @Test
     public void performChangeManagementTestAllNewObjectsAdded() {
 
-        ActivityDTO tempDTO = this.creatDTOObjects2();
-        Activity tempDomainObject = this.creatDomainObjects2();
+        StrengthTrainingActivityDTO tempDTO = this.creatDTOObjects2();
+        StrengthTrainingActivity tempDomainObject = this.creatDomainObjects2();
 
         tempDomainObject.applyChanges(tempDTO);
         assertTrue(this.hasExpectedComments2(tempDomainObject),
@@ -156,7 +156,7 @@ public class ChangeManagementTest {
      * @param anActivity Activity
      * @return
      */
-    public boolean hasExpectedComments2(Activity anActivity) {
+    public boolean hasExpectedComments2(StrengthTrainingActivity anActivity) {
 
         boolean tempCond1;
         boolean tempCond2;
@@ -202,11 +202,11 @@ public class ChangeManagementTest {
      * Create dto objects
      * @return ActivityDTO
      */
-    public ActivityDTO creatDTOObjects2() {
+    public StrengthTrainingActivityDTO creatDTOObjects2() {
 
-        ActivityDTO tempDTO;
+        StrengthTrainingActivityDTO tempDTO;
 
-        tempDTO = new ActivityDTO();
+        tempDTO = new StrengthTrainingActivityDTO();
         tempDTO.addComment(new CommentDTO(null,
                 "New Comment 1",
                 0,
@@ -231,13 +231,13 @@ public class ChangeManagementTest {
 
     /**
      * Create domain objects
-     * @return Activity
+     * @return StrengthTrainingActivity
      */
-    public Activity creatDomainObjects2() {
+    public StrengthTrainingActivity creatDomainObjects2() {
 
-        Activity tempDomainObject;
+        StrengthTrainingActivity tempDomainObject;
 
-        tempDomainObject = new Activity();
+        tempDomainObject = new StrengthTrainingActivity();
 
         return tempDomainObject;
 
@@ -251,8 +251,8 @@ public class ChangeManagementTest {
     @Test
     public void performChangeManagementTestAllObjectsRemovedFromDomainObject() {
 
-        ActivityDTO tempDTO = this.creatDTOObjects3();
-        Activity tempDomainObject = this.creatDomainObjects3();
+        StrengthTrainingActivityDTO tempDTO = this.creatDTOObjects3();
+        StrengthTrainingActivity tempDomainObject = this.creatDomainObjects3();
 
         tempDomainObject.applyChanges(tempDTO);
         assertTrue(this.hasExpectedComments3(tempDomainObject),
@@ -264,7 +264,7 @@ public class ChangeManagementTest {
      * @param anActivity Activity
      * @return
      */
-    public boolean hasExpectedComments3(Activity anActivity) {
+    public boolean hasExpectedComments3(StrengthTrainingActivity anActivity) {
 
         boolean tempCond1;
 
@@ -281,13 +281,13 @@ public class ChangeManagementTest {
 
     /**
      * Create dto objects
-     * @return ActivityDTO
+     * @return StrengthTrainingActivityDTO
      */
-    public ActivityDTO creatDTOObjects3() {
+    public StrengthTrainingActivityDTO creatDTOObjects3() {
 
-        ActivityDTO tempDTO;
+        StrengthTrainingActivityDTO tempDTO;
 
-        tempDTO = new ActivityDTO();
+        tempDTO = new StrengthTrainingActivityDTO();
 
         return tempDTO;
 
@@ -296,13 +296,13 @@ public class ChangeManagementTest {
 
     /**
      * Create domain objects
-     * @return Activity
+     * @return StrengthTrainingActivity
      */
-    public Activity creatDomainObjects3() {
+    public StrengthTrainingActivity creatDomainObjects3() {
 
-        Activity tempDomainObject;
+        StrengthTrainingActivity tempDomainObject;
 
-        tempDomainObject = new Activity();
+        tempDomainObject = new StrengthTrainingActivity();
 
         tempDomainObject.addComment(new Comment(Long.valueOf(2),
                 "Existing Comment 2",
