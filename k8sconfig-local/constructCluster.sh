@@ -5,6 +5,8 @@ kubectl create -f keycloak/keycloak-service.yml
 
 #logbook
 kubectl apply -f sa/logbook-service-account.yml
+kubectl create -f logbook/logbook-tempspace-pv.yml
+kubectl create -f logbook/logbook-tempspace-pvc.yml
 kubectl create -f logbook/logbook-config-map.yml
 kubectl create -f logbook/logbook-deployment.yml
 kubectl create -f logbook/logbook-service.yml

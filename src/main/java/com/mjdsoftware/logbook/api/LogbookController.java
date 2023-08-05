@@ -1,5 +1,7 @@
 package com.mjdsoftware.logbook.api;
 
+import com.mjdsoftware.logbook.csv.ActivityCSVFileExporter;
+import com.mjdsoftware.logbook.csv.ActivityWrapper;
 import com.mjdsoftware.logbook.domain.entities.Activity;
 import com.mjdsoftware.logbook.domain.entities.Logbook;
 import com.mjdsoftware.logbook.domain.entities.LogbookEntry;
@@ -11,6 +13,7 @@ import com.mjdsoftware.logbook.service.ActivityService;
 import com.mjdsoftware.logbook.service.LogbookEntryService;
 import com.mjdsoftware.logbook.service.LogbookService;
 import com.mjdsoftware.logbook.service.UserService;
+import com.mjdsoftware.logbook.utils.FileUtilities;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -31,6 +34,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +59,9 @@ public class LogbookController {
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private UserService userService;
 
+    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
+    private FileUtilities fileUtils;
+
     //Constants
     public static final String STRENGTH_TRAINING_ACTIVITY_NOT_FOUND_MESSAGE = "Strength training activity - Logbook or LogbookEntry were not found to create an activity";
     public static final String UNMONITORED_AEROBIC_ACTIVITY_NOT_FOUND_MESSAGE = "UnMonitored aerobic activity - Logbook or LogbookEntry were not found to create an activity";
@@ -76,18 +84,21 @@ public class LogbookController {
      * @param aLogbookEntryService LogbookEntryService
      * @param anActivityService ActivityService
      * @param aUserService UserService
+     * @param aFileUtils FileUtilities
      */
     @Autowired
     public LogbookController(LogbookService aLogbookService,
                              LogbookEntryService aLogbookEntryService,
                              ActivityService anActivityService,
-                             UserService aUserService) {
+                             UserService aUserService,
+                             FileUtilities aFileUtils) {
 
         super();
         this.setLogbookService(aLogbookService);
         this.setLogbookEntryService(aLogbookEntryService);
         this.setActivityService(anActivityService);
         this.setUserService(aUserService);
+        this.setFileUtils(aFileUtils);
 
     }
 
@@ -854,6 +865,19 @@ public class LogbookController {
 
     }
 
+    /**
+     * Answer anActivities as wrapper objects for export
+     * @param anActivities List
+     * @return List
+     */
+    private List<ActivityWrapper> asActivityWrappers(List<Activity> anActivities) {
+
+        return anActivities.stream()
+                           .map((anEntry)->this.asWrapperObject(anEntry))
+                           .collect(Collectors.toList());
+
+    }
+
 
     /**
      * Answer anActivity as a value object
@@ -872,6 +896,26 @@ public class LogbookController {
         return tempResult;
 
     }
+
+    /**
+     * Answer anActivity as a wrapper object
+     * @param anActivity Activity
+     * @return ActivityWrapper
+     */
+    private ActivityWrapper asWrapperObject(Activity anActivity) {
+
+        ActivityWrapper tempResult = null;
+
+        if (anActivity!= null) {
+
+            tempResult = new ActivityWrapper(anActivity);
+        }
+
+        return tempResult;
+
+    }
+
+
 
     /**
      * Find all logbook entries for a logbook identified by id.
@@ -949,5 +993,105 @@ public class LogbookController {
 
     }
 
+    /**
+     * Export activities defined by anActivityExportRequest
+     * @param logbookId Long
+     * @param anActivityExportRequest
+     *
+     */
+    @Operation(summary = "Export activities for logbookId based on anActivityExportRequest",
+            description = "Export activities for logbookId based on anActivityExportRequest")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success"),
+            @ApiResponse(responseCode = "400",
+                    description = "General client error"),
+            @ApiResponse(responseCode = "500",
+                    description = "General server error")
+    })
+    @PostMapping("logbook/{logbookId}/activities")
+    @PreAuthorize("@methodSecurityService.isAccessAllowedForLogbook(#authentication, #servletRequest, #token, #logbookId)")
+    public void
+    exportActivities(Authentication authentication,
+                                     HttpServletRequest servletRequest,
+                                     @AuthenticationPrincipal Jwt token,
+                                     @PathVariable Long logbookId,
+                                     @Valid @RequestBody ActivityExportRequest anActivityExportRequest) {
+
+
+        List<ActivityWrapper>   tempWrappers;
+        List<Activity>          tempActivities;
+
+        this.validateDates(anActivityExportRequest);
+        tempActivities =
+                this.getActivityService()
+                    .findAllActivitiesBetweenDates(logbookId,
+                                                   anActivityExportRequest.getStartTimeEpoch(),
+                                                   anActivityExportRequest.getEndTimeEpoch(),
+                                                   anActivityExportRequest.getActivityType());
+        tempWrappers = this.asActivityWrappers(tempActivities);
+
+        //Export file asynchronously
+        if (!tempWrappers.isEmpty()) {
+
+            this.basicExportActivitiesToFileAsynchronously(anActivityExportRequest, tempWrappers);
+        }
+
+        //TODO = Return -- May need some sort of message here
+    }
+
+    /**
+     * Asynchronously export activities to file
+     * @param anActivityExportRequest ActivityExportRequest
+     * @param aWrappers List
+     */
+    private void basicExportActivitiesToFileAsynchronously(ActivityExportRequest anActivityExportRequest,
+                                                           List<ActivityWrapper> aWrappers) {
+
+        File                    tempFile;
+        ActivityCSVFileExporter tempExporter;
+
+        tempFile = this.createEmptyFile(anActivityExportRequest.getExportFilename());
+        tempExporter = new ActivityCSVFileExporter(tempFile);
+        tempExporter.writeCsvFileAsynchronously(aWrappers.toArray(new ActivityWrapper[aWrappers.size()]));
+
+    }
+
+    /**
+     * Validate dates
+     * @param aRequest ActivityExportRequest
+     */
+    private void validateDates(ActivityExportRequest aRequest) {
+
+        if (!aRequest.isDateRangeValid()) {
+
+            throw new IllegalArgumentException("Invalid dats for export");
+        }
+
+    }
+
+    /**
+     * Create empty file
+     * @param anAbsoluteFilepath String
+     */
+    private File createEmptyFile(String anAbsoluteFilepath) {
+
+        File    tempResult = null;
+
+        try {
+
+            tempResult = new File(anAbsoluteFilepath);
+            this.getFileUtils().createNewEmptyFile(tempResult);
+            this.getFileUtils().validateFileExists(tempResult);
+        }
+        catch (IOException e) {
+
+            getLogger().error("Cannot create file for " + anAbsoluteFilepath, e);
+            throw new IllegalArgumentException("Cannot create file for " + anAbsoluteFilepath, e);
+
+        }
+
+        return tempResult;
+    }
 
 }

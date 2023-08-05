@@ -106,14 +106,22 @@ via the UserController REST service.
        you have the ability to create logbooks for the specific user, as well as other resources. Note that the admin user can do any of this
        activity on behalf of another user. This has been implemented as part of the MethodSecurityService currently.
 
-11. Project next steps:
+11. First implemetation of an export facility. It will currently be hosted mapped to /tmp on your local machine (you need to prefix the 
+filename with /data/), so if you want to change this directory, you need to change projectDir/k8sconfig-local/logbook/logbook-tempspace-pv.yml 
+to point at a different directory. The current implementation will not handle large logbooks, so I will need to make
+some changes here. The idea behind it is that you can take the csv file and use a graphing facility to 
+analyze trends from workout to workout. See http://logbook/swagger-ui/index.html#/LogbookController/exportActivities
+for the interface details.
 
-    -Experiment with MapStruct
 
-    -Export facility - Will export data into csv format from the database over a date range
+12. Project next steps:
+
+    -Export facility - Need to make sone changes to handle very large logbooks.
 
     -Statistics
 
     -Helm chart(s) for everything
+
+    -Experiment with MapStruct
 
 

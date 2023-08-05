@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -165,6 +167,37 @@ public class ActivityServiceImpl extends AbstractServiceImpl implements Activity
     public List<Activity> findActivitiesForLogbookEntry(@NonNull LogbookEntry anEntry) {
 
         return this.getActivityRepository().findActivitiesByLogbookEntry(anEntry);
+
+    }
+
+    /**
+     * Find all activities that exist for aLogbookId between aStartDate and anEndDate
+     * @param aLogbookId Long
+     * @param aStartDateEpoch Long
+     * @param anEndDateEpoch Long
+     * @return List
+     */
+    @Transactional
+    @Override
+    public List<Activity> findAllActivitiesBetweenDates(@NonNull Long aLogbookId,
+                                                        @NonNull Long aStartDateEpoch,
+                                                        @NonNull Long anEndDateEpoch,
+                                                        ActivityType anActivityType) {
+
+        Calendar tempStartDate;
+        Calendar tempEndDate;
+
+        this.validateId(getLogger(), "Invalid logbook id", aLogbookId);
+
+        tempStartDate = Calendar.getInstance();
+        tempStartDate.setTime(new Date(aStartDateEpoch));
+        tempEndDate = Calendar.getInstance();
+        tempEndDate.setTime(new Date(anEndDateEpoch));
+
+        return this.getActivityRepository()
+                   .findAllActivities(tempStartDate,
+                                      tempEndDate,
+                                      aLogbookId);
 
     }
 

@@ -22,9 +22,21 @@
 		<test-containers.keycloak.version>2.2.2</test-containers.keycloak.version>
 		<javax.activation.version>1.1.1</javax.activation.version>
 		<docker.plugin.version>0.40.2</docker.plugin.version>
+		<commons-io.version>2.6</commons-io.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-csv</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>

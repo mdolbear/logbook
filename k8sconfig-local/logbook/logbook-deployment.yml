@@ -22,6 +22,9 @@ spec:
           items:
             - key: application.yml
               path: application.yml
+      - name: data
+        persistentVolumeClaim:
+          claimName: logbook-tempspace-pvc
       containers:
       - name: logbook
         image: mjdsoftware/logbook:0.0.1-SNAPSHOT
@@ -46,6 +49,8 @@ spec:
         - name: application-properties-map
           mountPath: /config
           readOnly: true
+        - name: data
+          mountPath: /data
         # the readiness probe details
         readinessProbe:
           httpGet: # make an HTTP request

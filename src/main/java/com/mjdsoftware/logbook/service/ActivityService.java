@@ -1,6 +1,7 @@
 package com.mjdsoftware.logbook.service;
 
 import com.mjdsoftware.logbook.domain.entities.Activity;
+import com.mjdsoftware.logbook.domain.entities.ActivityType;
 import com.mjdsoftware.logbook.domain.entities.Logbook;
 import com.mjdsoftware.logbook.domain.entities.LogbookEntry;
 import com.mjdsoftware.logbook.dto.ActivityDTO;
@@ -46,5 +47,20 @@ public interface ActivityService {
      * @return List
      */
     public List<Activity> findActivitiesForLogbookEntry(LogbookEntry anEntry);
+
+
+    /**
+     * Find all activities that exist for aLogbookId between aStartDate and anEndDate
+     * @param aLogbookId Long
+     * @param aStartDateEpoch Long
+     * @param anEndDateEpoch Long
+     * @param anActivityType ActivityType
+     * @return List
+     */
+    @Transactional
+    public List<Activity> findAllActivitiesBetweenDates(Long aLogbookId,
+                                                        Long aStartDateEpoch,
+                                                        Long anEndDateEpoch,
+                                                        ActivityType anActivityType);
 
 }
