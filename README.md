@@ -126,4 +126,7 @@ for the interface details.
 
     -Experiment with MapStruct
 
+    -Change Oauth2 password grant type to at least authorization code grant type
+
+
 
