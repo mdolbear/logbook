@@ -120,6 +120,8 @@ for the interface details.
 
     -Statistics
 
+    -A lot more test cases (light on tests right now)
+
     -Helm chart(s) for everything
 
     -Experiment with MapStruct
