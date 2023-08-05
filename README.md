@@ -130,3 +130,13 @@ for the interface details.
 
 
 
+Reasons for doing this project (besides learning)
+
+I will have about 3 years of detailed rowing data after I get the code for this project completed. One of my
+goals with my data and this software is to determine the effects of Zone 2 cardio training on one's body. Based on
+the research we would think that, after a couple of years of zone 2 training, we should see heart rate stay stable and
+output (calories/average watts/distance/etc) improve over time. So, I would like to test this assumption using my
+own body.
+
+
+
