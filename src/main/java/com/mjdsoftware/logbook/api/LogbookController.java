@@ -1,7 +1,5 @@
 package com.mjdsoftware.logbook.api;
 
-import com.mjdsoftware.logbook.csv.ActivityCSVFileExporter;
-import com.mjdsoftware.logbook.csv.ActivityWrapper;
 import com.mjdsoftware.logbook.domain.entities.Activity;
 import com.mjdsoftware.logbook.domain.entities.Logbook;
 import com.mjdsoftware.logbook.domain.entities.LogbookEntry;
@@ -13,7 +11,6 @@ import com.mjdsoftware.logbook.service.ActivityService;
 import com.mjdsoftware.logbook.service.LogbookEntryService;
 import com.mjdsoftware.logbook.service.LogbookService;
 import com.mjdsoftware.logbook.service.UserService;
-import com.mjdsoftware.logbook.utils.FileUtilities;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -34,8 +31,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,9 +54,6 @@ public class LogbookController {
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private UserService userService;
 
-    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
-    private FileUtilities fileUtils;
-
     //Constants
     public static final String STRENGTH_TRAINING_ACTIVITY_NOT_FOUND_MESSAGE = "Strength training activity - Logbook or LogbookEntry were not found to create an activity";
     public static final String UNMONITORED_AEROBIC_ACTIVITY_NOT_FOUND_MESSAGE = "UnMonitored aerobic activity - Logbook or LogbookEntry were not found to create an activity";
@@ -84,21 +76,18 @@ public class LogbookController {
      * @param aLogbookEntryService LogbookEntryService
      * @param anActivityService ActivityService
      * @param aUserService UserService
-     * @param aFileUtils FileUtilities
      */
     @Autowired
     public LogbookController(LogbookService aLogbookService,
                              LogbookEntryService aLogbookEntryService,
                              ActivityService anActivityService,
-                             UserService aUserService,
-                             FileUtilities aFileUtils) {
+                             UserService aUserService) {
 
         super();
         this.setLogbookService(aLogbookService);
         this.setLogbookEntryService(aLogbookEntryService);
         this.setActivityService(anActivityService);
         this.setUserService(aUserService);
-        this.setFileUtils(aFileUtils);
 
     }
 
@@ -865,19 +854,6 @@ public class LogbookController {
 
     }
 
-    /**
-     * Answer anActivities as wrapper objects for export
-     * @param anActivities List
-     * @return List
-     */
-    private List<ActivityWrapper> asActivityWrappers(List<Activity> anActivities) {
-
-        return anActivities.stream()
-                           .map((anEntry)->this.asWrapperObject(anEntry))
-                           .collect(Collectors.toList());
-
-    }
-
 
     /**
      * Answer anActivity as a value object
@@ -891,24 +867,6 @@ public class LogbookController {
         if (anActivity!= null) {
 
             tempResult = anActivity.asValueObject();
-        }
-
-        return tempResult;
-
-    }
-
-    /**
-     * Answer anActivity as a wrapper object
-     * @param anActivity Activity
-     * @return ActivityWrapper
-     */
-    private ActivityWrapper asWrapperObject(Activity anActivity) {
-
-        ActivityWrapper tempResult = null;
-
-        if (anActivity!= null) {
-
-            tempResult = new ActivityWrapper(anActivity);
         }
 
         return tempResult;
@@ -1018,43 +976,11 @@ public class LogbookController {
                                      @PathVariable Long logbookId,
                                      @Valid @RequestBody ActivityExportRequest anActivityExportRequest) {
 
-
-        List<ActivityWrapper>   tempWrappers;
-        List<Activity>          tempActivities;
-
         this.validateDates(anActivityExportRequest);
-        tempActivities =
-                this.getActivityService()
-                    .findAllActivitiesBetweenDates(logbookId,
-                                                   anActivityExportRequest.getStartTimeEpoch(),
-                                                   anActivityExportRequest.getEndTimeEpoch(),
-                                                   anActivityExportRequest.getActivityType());
-        tempWrappers = this.asActivityWrappers(tempActivities);
-
-        //Export file asynchronously
-        if (!tempWrappers.isEmpty()) {
-
-            this.basicExportActivitiesToFileAsynchronously(anActivityExportRequest, tempWrappers);
-        }
+        this.getActivityService()
+            .exportActivitiesToFileAsynchronously(logbookId, anActivityExportRequest);
 
         //TODO = Return -- May need some sort of message here
-    }
-
-    /**
-     * Asynchronously export activities to file
-     * @param anActivityExportRequest ActivityExportRequest
-     * @param aWrappers List
-     */
-    private void basicExportActivitiesToFileAsynchronously(ActivityExportRequest anActivityExportRequest,
-                                                           List<ActivityWrapper> aWrappers) {
-
-        File                    tempFile;
-        ActivityCSVFileExporter tempExporter;
-
-        tempFile = this.createEmptyFile(anActivityExportRequest.getExportFilename());
-        tempExporter = new ActivityCSVFileExporter(tempFile);
-        tempExporter.writeCsvFileAsynchronously(aWrappers.toArray(new ActivityWrapper[aWrappers.size()]));
-
     }
 
     /**
@@ -1070,28 +996,5 @@ public class LogbookController {
 
     }
 
-    /**
-     * Create empty file
-     * @param anAbsoluteFilepath String
-     */
-    private File createEmptyFile(String anAbsoluteFilepath) {
-
-        File    tempResult = null;
-
-        try {
-
-            tempResult = new File(anAbsoluteFilepath);
-            this.getFileUtils().createNewEmptyFile(tempResult);
-            this.getFileUtils().validateFileExists(tempResult);
-        }
-        catch (IOException e) {
-
-            getLogger().error("Cannot create file for " + anAbsoluteFilepath, e);
-            throw new IllegalArgumentException("Cannot create file for " + anAbsoluteFilepath, e);
-
-        }
-
-        return tempResult;
-    }
 
 }

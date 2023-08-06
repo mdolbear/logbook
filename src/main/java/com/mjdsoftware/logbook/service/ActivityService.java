@@ -1,11 +1,14 @@
 package com.mjdsoftware.logbook.service;
 
+import com.mjdsoftware.logbook.csv.ActivityWrapper;
 import com.mjdsoftware.logbook.domain.entities.Activity;
 import com.mjdsoftware.logbook.domain.entities.ActivityType;
 import com.mjdsoftware.logbook.domain.entities.Logbook;
 import com.mjdsoftware.logbook.domain.entities.LogbookEntry;
 import com.mjdsoftware.logbook.dto.ActivityDTO;
+import com.mjdsoftware.logbook.dto.ActivityExportRequest;
 import lombok.NonNull;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -50,17 +53,34 @@ public interface ActivityService {
 
 
     /**
-     * Find all activities that exist for aLogbookId between aStartDate and anEndDate
+     * Find all activities between dates as wrappers
+     * @param aLogbookId Long
+     * @param anActivityExportRequest ActivityExportRequest
+     * @param aPageNumber
+     * @return List
+     */
+    public List<ActivityWrapper> findAllActivitiesBetweenDatesAsWrappers(Long aLogbookId,
+                                                                         ActivityExportRequest anActivityExportRequest,
+                                                                         int aPageNumber);
+
+    /**
+     * Export activities to file asynchronously
+     * @param aLogbookId Long
+     * @param anActivityExportRequest ActivityExportRequest
+     */
+    public void exportActivitiesToFileAsynchronously(Long aLogbookId,
+                                                     ActivityExportRequest anActivityExportRequest);
+
+    /**
+     * Answer count of all activities that exist for aLogbookId between aStartDate and anEndDate
      * @param aLogbookId Long
      * @param aStartDateEpoch Long
      * @param anEndDateEpoch Long
-     * @param anActivityType ActivityType
-     * @return List
+     * @return Long
      */
-    @Transactional
-    public List<Activity> findAllActivitiesBetweenDates(Long aLogbookId,
-                                                        Long aStartDateEpoch,
-                                                        Long anEndDateEpoch,
-                                                        ActivityType anActivityType);
+    public Long getCountOfAllActivitiesBetweenDates(Long aLogbookId,
+                                                    Long aStartDateEpoch,
+                                                    Long anEndDateEpoch,
+                                                    ActivityType anActivityType);
 
 }

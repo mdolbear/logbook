@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -17,7 +18,7 @@ public abstract class AbstractCSVFileExporter<D> {
     @Getter(AccessLevel.PROTECTED) @Setter(AccessLevel.PROTECTED)
     private File exportFile;
 
-    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
+    @Getter(AccessLevel.PROTECTED) @Setter(AccessLevel.PRIVATE)
     private CsvMapper csvMapper;
 
     /**
@@ -66,11 +67,22 @@ public abstract class AbstractCSVFileExporter<D> {
                                      this.getCsvLineFormatClass());
 
         //Write data to file
+        this.writeDataToFile(aData, tempSchema);
+
+
+    }
+
+    /**
+     * Write aDate to file given aSchema
+     * @param aData D[]
+     * @param aSchema CsvSchema
+     * @throws IOException
+     */
+    protected void writeDataToFile(D[] aData, CsvSchema aSchema) throws IOException {
+
         this.getCsvMapper().writerFor(this.getDArrayClass())
-                           .with(tempSchema)
+                           .with(aSchema)
                            .writeValue(this.getExportFile(), aData);
-
-
     }
 
     /**

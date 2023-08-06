@@ -116,8 +116,6 @@ for the interface details.
 
 12. Project next steps:
 
-    -Export facility - Need to make sone changes to handle very large logbooks.
-
     -Statistics
 
     -A lot more test cases (light on tests right now)
