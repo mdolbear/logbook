@@ -23,9 +23,17 @@
 		<javax.activation.version>1.1.1</javax.activation.version>
 		<docker.plugin.version>0.40.2</docker.plugin.version>
 		<commons-io.version>2.6</commons-io.version>
+		<apache-commons-csv.version>1.8</apache-commons-csv.version>
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>${apache-commons-csv.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-csv</artifactId>

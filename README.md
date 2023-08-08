@@ -116,6 +116,9 @@ for the interface details.
 
 12. Project next steps:
 
+    -Bug(s) - create logbookentry without any creation of activities since we now subclass.
+            - dates not passing through on activity date...issue
+
     -Statistics
 
     -A lot more test cases (light on tests right now)

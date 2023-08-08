@@ -16,6 +16,31 @@ public class ActivityWrapper {
     private Activity activity;
 
     /**
+     * Answer myself as object values
+     * @return Object[]
+     */
+    public Object[] asObjectValues() {
+
+        Object[] tempResult = new Object[10];
+
+        tempResult[0] = this.getId();
+        tempResult[1] = this.getActivityType();
+        tempResult[2] = this.getDuration();
+        tempResult[3] = this.getDurationUnits();
+        tempResult[4] = this.getActivityDetails();
+        tempResult[5] = this.getDistance();
+        tempResult[6] = this.getDistanceUnits();
+        tempResult[7] = this.getAverageWatts();
+        tempResult[8] = this.getTotalCalories();
+        tempResult[9] = this.getAverageHeartRate();
+
+
+        return tempResult;
+
+    }
+
+
+    /**
      * Answer my id
      * @return Long
      */

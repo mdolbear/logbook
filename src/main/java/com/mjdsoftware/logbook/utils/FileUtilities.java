@@ -1,6 +1,7 @@
 package com.mjdsoftware.logbook.utils;
 
 
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -193,6 +194,44 @@ public class FileUtilities {
             //Do nothing
         }
 
+    }
+
+    /**
+     * Silently close aFileWriter
+     * @param aWriter FileWriter
+     */
+    public void silentlyCloseFileWriter(FileWriter aWriter) {
+
+        if (aWriter != null) {
+
+            try {
+                aWriter.close();
+            }
+            catch (IOException e) {
+
+                //Do nothing
+            }
+
+        }
+    }
+
+    /**
+     * Silently close aPrinter
+     * @param aPrinter CSVPrinter
+     */
+    public void silentlyClosePrinter(CSVPrinter aPrinter) {
+
+        if (aPrinter != null) {
+
+            try {
+                aPrinter.close();
+            }
+            catch (IOException e) {
+
+                //Do nothing
+            }
+
+        }
     }
 
 }

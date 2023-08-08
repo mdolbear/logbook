@@ -8,14 +8,20 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-public class ChunkableActivityCSVFileExporter extends AbstractCSVFileExporter<ActivityWrapper> {
+public class ChunkableActivityCSVFileExporter  {
+
+    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
+    private File exportFile;
 
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private Long logbookId;
@@ -31,6 +37,20 @@ public class ChunkableActivityCSVFileExporter extends AbstractCSVFileExporter<Ac
 
     @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private FileUtilities fileUtilities;
+
+    //Constants
+    private static final String[] COLUMNS = {"id", "activityType", "duration",
+            "durationUnits", "activityDetails", "distance", "distanceUnits",
+            "averageWatts", "totalCalories", "averageHeartRate"};
+
+    /**
+     * Answer my logger
+     *
+     * @return org.slf4j.Logger
+     */
+    private static Logger getLogger() {
+        return log;
+    }
 
     public ChunkableActivityCSVFileExporter(File anExportFile,
                                             Long logbookId,
@@ -49,65 +69,52 @@ public class ChunkableActivityCSVFileExporter extends AbstractCSVFileExporter<Ac
     }
 
     /**
-     * Answer my D array class. This is the array class that will be sent to be
-     * written in csv form. It's the "data" class in array form
-     *
-     * @return Class
+     * Write data asynchronously
+     * @param aData ActivityWrapper[]
      */
-    @Override
-    protected Class<?> getDArrayClass() {
-        return ActivityWrapper[].class;
+    public void writeCsvFileAsynchronously(ActivityWrapper[] aData) {
+
+        CompletableFuture.runAsync(() -> {
+
+            //TODO: figure out best way to handle this
+            try {
+                this.writeDataToFile(aData);
+            }
+            catch (Exception e) {
+
+                getLogger().info("Failed to export csv file successfully", e);
+            }
+
+        });
+
     }
 
-    /**
-     * Answer my D  class. This is the class that will be sent to be written in csv form.
-     * Its the "data" class
-     *
-     * @return Class
-     */
-    @Override
-    protected Class<?> getDClass() {
-        return ActivityWrapper.class;
-    }
-
-    /**
-     * Answer my CSV Line class. This class controls the mapping from json to CSV.
-     *
-     * @return Class
-     */
-    @Override
-    protected Class<?> getCsvLineFormatClass() {
-        return ActivityCSVLineDefinition.class;
-    }
 
 
     /**
      * Write aDate to file given aSchema
      * @param aData ActivityWrapper[]
-     * @param aSchema CsvSchema
      * @throws IOException
      */
-    @Override
-    protected void writeDataToFile(ActivityWrapper[] aData, CsvSchema aSchema) throws IOException {
+    private void writeDataToFile(ActivityWrapper[] aData) throws IOException {
 
         int                 tempPageNumber= 0;
-        OutputStream        tempStream = null;
         ActivityWrapper[]   tempArray;
+        FileWriter          tempOutputWriter = null;
+        CSVPrinter          tempPrinter = null;
+
 
         tempArray = aData;
 
         try {
 
-            tempStream =
-                    this.getFileUtilities()
-                        .createBufferedOutputStreamOnFilePath(this.getExportFile().getAbsolutePath());
+            tempOutputWriter = new FileWriter(this.getExportFile());
+            tempPrinter = this.createCSVPrinterWithColumnNames(tempOutputWriter);
 
             do {
 
                 //Write data to file
-                this.getCsvMapper().writerFor(this.getDArrayClass())
-                                   .with(aSchema)
-                                   .writeValue(tempStream, tempArray);
+                this.writeArrayToCSVPrinter(tempArray, tempPrinter);
 
                 //Decrement remaining pages
                 this.setNumberOfRemainingPages(this.getNumberOfRemainingPages() - 1);
@@ -122,12 +129,46 @@ public class ChunkableActivityCSVFileExporter extends AbstractCSVFileExporter<Ac
         }
         finally {
 
-            this.getFileUtilities().silentlyClose(tempStream);
+            this.getFileUtilities().silentlyCloseFileWriter(tempOutputWriter);
+            this.getFileUtilities().silentlyCloseFileWriter(tempOutputWriter);
 
         }
 
 
     }
+
+    /**
+     * Write array to csv printer
+     * @param anArray ActivityWrapper[]
+     * @param aPrinter CSVPrinter
+     * @throws IOException
+     */
+    private void writeArrayToCSVPrinter(ActivityWrapper[] anArray,
+                                        CSVPrinter aPrinter) throws IOException {
+
+        for (ActivityWrapper w : anArray) {
+
+            aPrinter.printRecord(w.asObjectValues());
+
+        }
+
+    }
+
+    /**
+     * Answer a new CSVPrinter
+     * @param tempOutWriter FileWriter
+     * @return CSVPrinter
+     * @throws IOException
+     */
+    private CSVPrinter createCSVPrinterWithColumnNames(FileWriter tempOutWriter) throws IOException {
+
+        return
+                new CSVPrinter(tempOutWriter,
+                               CSVFormat.DEFAULT
+                                .withHeader(COLUMNS));
+
+    }
+
 
     /**
      * Find next page of activities if there are any remaining
