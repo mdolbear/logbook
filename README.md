@@ -98,7 +98,7 @@ via the UserController REST service.
 
 ![](docs/RoleMapping-app_admin.png)
 
-    b. Once this user has been created, you can user this user to log into the app, via the OauthAccessController with this new admin level user.
+    b. Once this user has been created, you can use this user to log into the app, via the OauthAccessController with this new admin level user.
        See the Swagger interface above.
 
     c. Once connected as the admin user, you can now create users via the new implementation of UserController. From here its possible to
@@ -106,18 +106,54 @@ via the UserController REST service.
        you have the ability to create logbooks for the specific user, as well as other resources. Note that the admin user can do any of this
        activity on behalf of another user. This has been implemented as part of the MethodSecurityService currently.
 
-11. First implemetation of an export facility. It will currently be hosted mapped to /tmp on your local machine (you need to prefix the 
-filename with /data/), so if you want to change this directory, you need to change projectDir/k8sconfig-local/logbook/logbook-tempspace-pv.yml 
-to point at a different directory. The current implementation will not handle large logbooks, so I will need to make
-some changes here. The idea behind it is that you can take the csv file and use a graphing facility to 
+![](docs/RealmRoles.png)
+    
+    d. Note that you will want to make sure you create "realm roles" for app_admin, but also a typical app user that does not 
+       have admin privileges in the application (app_user in my case). In the logbook application, a non app_admin will only have the ability to
+       modify their own logbook.
+
+![](docs/ClientScopes.png)
+
+    e. In order for the roles to be included in the Jason Web Token (JWT) returned by keycloak when a user autheticates,
+       you will need to create something called a "client scope". You can name it anything you want, but here I call it
+       logbook-roles.
+
+![](docs/ClientScopes-Role.png)
+
+    f. The important aspect of a Client Scope is that it has a mapper. The mapper is going to take the user's role
+       and include it in a variabble as an array in the JWT. In this case, I called it "role". You can call it anything you
+       want, but it needs to match the jwt:auth:converter:resourceId: property in applicagtion.yml and in
+       k8sconfig-local/logbook/logbook-config-map.yml.
+
+![](docs/ClientScope-MapperDetails.png)
+
+    g. The role mapper for this client scope needs to be created according to the above image.
+
+
+![](docs/Client-ClientScopes.png)
+
+    h. Next the ClientScope needs to be added to the client called NewClient, as in the image above. Remember, I called
+       if logbook-roles. Once this is done, the "role" property will be included in the JWT as an array. If you look at
+       the class com.mjdsoftware.logbook.security.JwtAuthConverter, that is the class that extracts
+       the role from the JWT and includes it in the incoming user's granted authorities so that we
+       can use the role for method level security in Springboot.
+
+
+11. A first implemetation of an export facility has been completed. It will currently be host mapped to /tmp on your local machine (you need to prefix the 
+filename with /data/ in code when you upload it via the Swagger interface), so if you want to change this directory, you need to change 
+projectDir/k8sconfig-local/logbook/logbook-tempspace-pv.yml to point at a different directory. 
+The idea behind it is that you can take the csv file and use a graphing facility to 
 analyze trends from workout to workout. See http://logbook/swagger-ui/index.html#/LogbookController/exportActivities
 for the interface details.
 
 
 12. Project next steps:
 
-    -Bug(s) - create logbookentry without any creation of activities since we now subclass.
-            - dates not passing through on activity date...issue
+    -Bug(s)
+
+             - create logbookentry without any creation of activities since we now subclass.
+
+             - dates not passing through on activity date...issue
 
     -Statistics
 
