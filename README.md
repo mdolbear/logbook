@@ -133,11 +133,12 @@ via the UserController REST service.
 ![](docs/Client-ClientScopes.png)
 
     h. Next the ClientScope needs to be added to the client called NewClient, as in the image above. Remember, I called
-       it logbook-roles. Once this is done, the "role" property will be included in the JWT as an array. If you look at
+       it logbook-roles. Once this is done, the "role" property will be included in the JWT as an array (see below). If you look at
        the class com.mjdsoftware.logbook.security.JwtAuthConverter, that is the class that extracts
        the role from the JWT and includes it in the incoming user's granted authorities so that we
        can use the role for method level security in Springboot.
 
+![](docs/RawJwt.png)
 
 11. A first implemetation of an export facility has been completed. It will currently be host mapped to /tmp on your local machine (you need to prefix the 
 filename with /data/ in code when you upload it via the Swagger interface), so if you want to change this directory, you need to change 
