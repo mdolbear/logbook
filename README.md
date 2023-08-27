@@ -133,7 +133,7 @@ via the UserController REST service.
 ![](docs/Client-ClientScopes.png)
 
     h. Next the ClientScope needs to be added to the client called NewClient, as in the image above. Remember, I called
-       if logbook-roles. Once this is done, the "role" property will be included in the JWT as an array. If you look at
+       it logbook-roles. Once this is done, the "role" property will be included in the JWT as an array. If you look at
        the class com.mjdsoftware.logbook.security.JwtAuthConverter, that is the class that extracts
        the role from the JWT and includes it in the incoming user's granted authorities so that we
        can use the role for method level security in Springboot.
