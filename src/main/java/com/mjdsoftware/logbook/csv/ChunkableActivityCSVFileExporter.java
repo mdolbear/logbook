@@ -130,7 +130,7 @@ public class ChunkableActivityCSVFileExporter  {
         finally {
 
             this.getFileUtilities().silentlyCloseFileWriter(tempOutputWriter);
-            this.getFileUtilities().silentlyCloseFileWriter(tempOutputWriter);
+            this.getFileUtilities().silentlyClosePrinter(tempPrinter);
 
         }
 
