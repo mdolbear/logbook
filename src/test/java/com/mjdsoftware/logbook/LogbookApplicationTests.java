@@ -72,7 +72,7 @@ public class LogbookApplicationTests {
 	 * Mock keycloak utilities for now so we don't have to deal with it
 	 */
 	@BeforeEach
-	private void setup() {
+	public void setup() {
 
 		UserAuthDTO tempOauthUser = this.createOauthUser();
 		UserAuthDTO[] tempUsers = {tempOauthUser};
